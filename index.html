@@ -1,0 +1,5005 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>for katsu</title>
+  <!-- Quill Rich Text Editor -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB4idBWy2oU4-OFKsGDV6xQg9aXEoRK1Js",
+      authDomain: "for-katsu.firebaseapp.com",
+      projectId: "for-katsu",
+      storageBucket: "for-katsu.firebasestorage.app",
+      messagingSenderId: "982477284743",
+      appId: "1:982477284743:web:48cfbcbcd3fa2cc7cadf22",
+      measurementId: "G-JPFQCQ7KY5"
+    };
+
+    const _app = initializeApp(firebaseConfig);
+    window._fbAuth = getAuth(_app);
+    window._fbDb = getFirestore(_app);
+    window._fbFns = { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, doc, getDoc, setDoc };
+    window._fbReady = true;
+    document.dispatchEvent(new Event('firebase-ready'));
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root {
+      --bg: #FFFFFF;
+      --bg2: #F5F5F7;
+      --bg3: #EFEFEF;
+      --sep: #E5E5EA;
+      --sep2: #D1D1D6;
+      --text: #1C1C1E;
+      --text2: #636366;
+      --text3: #AEAEB2;
+      --pink: #f5bce2;
+      --pink2: rgba(245, 188, 226, 0.38);
+      --pink3: rgba(245, 188, 226, 0.16);
+      --pink-text: #7c4d6b;
+      --green: #34C759;
+      --red: #FF3B30;
+      --orange: #FF9500;
+      --purple: #AF52DE;
+      --indigo: #5856D6;
+      --sf: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      --r: 12px;
+      --r2: 8px;
+      --r3: 16px;
+      --sb: 228px;
+      --sb-c: 60px;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--sf);
+      background: var(--bg2);
+      display: flex;
+      color: var(--text);
+    }
+
+    /* ═══ AUTH OVERLAY ══════════════════════════════════════════ */
+    #auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    #auth-overlay.hidden {
+      display: none;
+    }
+
+    .auth-box {
+      background: var(--bg);
+      border-radius: 22px;
+      padding: 36px;
+      width: 360px;
+      max-width: 90vw;
+      box-shadow: 0 28px 80px rgba(0, 0, 0, .2);
+    }
+
+    .auth-logo {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -.8px;
+      margin-bottom: 4px;
+    }
+
+    .auth-logo span {
+      color: var(--pink-text);
+    }
+
+    .auth-sub {
+      font-size: 13px;
+      color: var(--text3);
+      margin-bottom: 28px;
+    }
+
+    .auth-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+
+    .auth-input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--sep2);
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 14px;
+      font-family: var(--sf);
+      color: var(--text);
+      background: var(--bg2);
+      outline: none;
+      margin-bottom: 14px;
+      transition: border-color .2s;
+    }
+
+    .auth-input:focus {
+      border-color: var(--pink);
+      background: var(--bg);
+    }
+
+    .auth-btn {
+      width: 100%;
+      height: 46px;
+      border-radius: 12px;
+      border: none;
+      background: var(--pink);
+      color: var(--pink-text);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--sf);
+      margin-top: 4px;
+      transition: opacity .15s;
+    }
+
+    .auth-btn:hover {
+      opacity: .88;
+    }
+
+    .auth-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .auth-err {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 8px;
+      min-height: 16px;
+    }
+
+    .auth-switch {
+      font-size: 12px;
+      color: var(--text3);
+      text-align: center;
+      margin-top: 14px;
+    }
+
+    .auth-switch a {
+      color: var(--pink-text);
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(124, 77, 107, .3);
+      border-top-color: var(--pink-text);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ═══ SIDEBAR ═══════════════════════════════════════════════ */
+    #sb {
+      width: var(--sb);
+      min-width: var(--sb);
+      background: var(--bg);
+      border-right: .5px solid var(--sep);
+      display: flex;
+      flex-direction: column;
+      transition: width .26s cubic-bezier(.32, .72, 0, 1), min-width .26s cubic-bezier(.32, .72, 0, 1);
+      overflow: hidden;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+
+    #sb.col {
+      width: var(--sb-c);
+      min-width: var(--sb-c);
+    }
+
+    .sb-top {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 10px;
+      border-bottom: .5px solid var(--sep);
+      flex-shrink: 0;
+    }
+
+    .sb-toggle {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4.5px;
+      cursor: pointer;
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+    }
+
+    .sb-toggle:hover {
+      background: var(--bg3);
+    }
+
+    .sb-toggle span {
+      display: block;
+      width: 16px;
+      height: 1.5px;
+      background: var(--text2);
+      border-radius: 1px;
+    }
+
+    .sb-toggle span:nth-child(2) {
+      width: 11px;
+    }
+
+    .sb-appname {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      opacity: 1;
+      transition: opacity .18s;
+    }
+
+    .sb-appname em {
+      font-style: normal;
+      color: var(--pink-text);
+    }
+
+    #sb.col .sb-appname {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sb-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 14px 12px;
+      border-bottom: .5px solid var(--sep);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .sb-pfp-wrap {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .sb-pfp-wrap:hover .sb-pfp-overlay {
+      opacity: 1;
+    }
+
+    .sb-pfp {
+      width: 36px;
+      height: 36px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--pink), #c9b4d9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .sb-pfp img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 18px;
+    }
+
+    .sb-pfp-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      background: rgba(0, 0, 0, .42);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+
+    .sb-pname-wrap {
+      min-width: 0;
+    }
+
+    .sb-pname {
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: text;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sb-pname-inp {
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--sf);
+      color: var(--text);
+      border: none;
+      border-bottom: 1.5px solid var(--pink);
+      outline: none;
+      background: transparent;
+      width: 120px;
+      padding: 0;
+    }
+
+    .sb-phandle {
+      font-size: 11px;
+      color: var(--text3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
+    }
+
+    #sb.col .sb-profile-info {
+      display: none;
+    }
+
+    .sb-nav {
+      flex: 1;
+      padding: 8px 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sb-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .sb-sec {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      padding: 14px 14px 4px;
+      white-space: nowrap;
+      opacity: 1;
+      transition: opacity .18s;
+    }
+
+    #sb.col .sb-sec {
+      opacity: 0;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      white-space: nowrap;
+      transition: background .1s;
+      position: relative;
+    }
+
+    .nav-btn:hover {
+      background: var(--bg2);
+    }
+
+    .nav-btn.active {
+      background: var(--pink3);
+    }
+
+    .nav-btn.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      background: var(--pink);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .nav-ico {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--text2);
+    }
+
+    .nav-btn.active .nav-ico {
+      background: var(--pink2);
+      color: var(--pink-text);
+    }
+
+    .nav-lbl {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text2);
+      opacity: 1;
+      transition: opacity .18s;
+    }
+
+    .nav-btn.active .nav-lbl {
+      color: var(--pink-text);
+      font-weight: 600;
+    }
+
+    #sb.col .nav-lbl {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sb-signout {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      color: var(--text3);
+      font-size: 13px;
+      font-family: var(--sf);
+      transition: color .1s;
+    }
+
+    .sb-signout:hover {
+      color: var(--red);
+    }
+
+    /* ═══ MAIN ══════════════════════════════════════════════════ */
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+      position: relative;
+    }
+
+    /* PAGE TRANSITIONS */
+    .page {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      flex-direction: column;
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .page.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+      position: relative;
+    }
+
+    .topbar {
+      height: 56px;
+      background: var(--bg);
+      border-bottom: .5px solid var(--sep);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -.4px;
+      flex: 1;
+    }
+
+    .page-body {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg2);
+      padding: 24px;
+    }
+
+    .page-body::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .page-body::-webkit-scrollbar-thumb {
+      background: var(--sep2);
+      border-radius: 3px;
+    }
+
+    /* SHARED */
+    .card {
+      background: var(--bg);
+      border-radius: var(--r);
+      border: .5px solid var(--sep);
+      overflow: hidden;
+    }
+
+    .card-row {
+      display: flex;
+      align-items: center;
+      padding: 11px 14px;
+      border-bottom: .5px solid var(--sep);
+      cursor: pointer;
+      transition: background .1s;
+    }
+
+    .card-row:last-child {
+      border-bottom: none;
+    }
+
+    .card-row:hover {
+      background: var(--bg2);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 9px;
+    }
+
+    .pill-pink {
+      background: var(--pink2);
+      color: var(--pink-text);
+    }
+
+    .pill-green {
+      background: rgba(52, 199, 89, .12);
+      color: #248A3D;
+    }
+
+    .pill-red {
+      background: rgba(255, 59, 48, .1);
+      color: #D70015;
+    }
+
+    .pill-gray {
+      background: var(--bg3);
+      color: var(--text2);
+    }
+
+    .sec-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: var(--sf);
+      transition: opacity .15s;
+    }
+
+    .btn:hover {
+      opacity: .85;
+    }
+
+    .btn-pink {
+      background: var(--pink);
+      color: var(--pink-text);
+    }
+
+    .btn-sm {
+      height: 32px;
+      font-size: 12px;
+      padding: 0 12px;
+      border-radius: 8px;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 52px 24px;
+      gap: 10px;
+    }
+
+    .empty-ico {
+      margin-bottom: 4px;
+      opacity: .3;
+    }
+
+    .empty-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text2);
+    }
+
+    .empty-sub {
+      font-size: 13px;
+      color: var(--text3);
+      text-align: center;
+      max-width: 260px;
+      line-height: 1.55;
+    }
+
+    /* HOME — dashboard style */
+    .home-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .home-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.6px;
+    }
+
+    .home-subtitle {
+      font-size: 13px;
+      color: var(--text3);
+      font-weight: 400;
+    }
+
+    .home-quarter-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--pink-text);
+      background: var(--pink2);
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-left: auto;
+    }
+
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    @media(max-width:900px) {
+      .home-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width:600px) {
+      .home-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .stat-card {
+      background: var(--bg);
+      border-radius: var(--r3);
+      padding: 18px;
+      border: .5px solid var(--sep);
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--pink);
+      box-shadow: 0 4px 20px rgba(245, 188, 226, .2);
+    }
+
+    .stat-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 6px;
+    }
+
+    .stat-val {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      margin: 2px 0 8px;
+      line-height: 1;
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    .stat-streak {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .streak-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 600;
+      color: var(--text3);
+    }
+
+    .streak-dot.active {
+      background: rgba(88, 86, 214, .15);
+      color: var(--indigo);
+    }
+
+    .streak-dot.today {
+      background: var(--indigo);
+      color: #fff;
+    }
+
+    .home-section-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 10px;
+    }
+
+    .home-recents {
+      background: var(--bg);
+      border-radius: var(--r);
+      border: .5px solid var(--sep);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .home-recent-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-bottom: .5px solid var(--sep);
+      cursor: pointer;
+      transition: background .1s;
+    }
+
+    .home-recent-row:last-child {
+      border-bottom: none;
+    }
+
+    .home-recent-row:hover {
+      background: var(--bg2);
+    }
+
+    .home-recent-ico {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .home-recent-name {
+      font-size: 14px;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .home-recent-sub {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .home-recent-arr {
+      color: var(--text3);
+      font-size: 16px;
+    }
+
+    .home-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    @media(max-width:700px) {
+      .home-actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .home-action-btn {
+      background: var(--bg);
+      border: .5px solid var(--sep);
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      transition: background .1s, border-color .15s;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .home-action-btn:hover {
+      background: var(--bg2);
+      border-color: var(--pink);
+    }
+
+    .home-action-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .home-action-lbl {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* GWA QUARTERS */
+    .gwa-quarter-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      padding: 4px;
+      background: var(--bg3);
+      border-radius: 10px;
+    }
+
+    .gwa-qtab {
+      flex: 1;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      cursor: pointer;
+      font-family: var(--sf);
+      transition: all .15s;
+    }
+
+    .gwa-qtab.active {
+      background: var(--bg);
+      color: var(--pink-text);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .1);
+    }
+
+    .gwa-compare-section {
+      margin-top: 20px;
+    }
+
+    .gwa-compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .gwa-compare-card {
+      background: var(--bg);
+      border: .5px solid var(--sep);
+      border-radius: var(--r2);
+      padding: 12px 14px;
+    }
+
+    .gwa-compare-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 4px;
+    }
+
+    .gwa-compare-val {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -.5px;
+    }
+
+    .gwa-compare-sub {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+
+    .gwa-improve-tip {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-top: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 149, 0, .06);
+      border-radius: 8px;
+      border-left: 3px solid var(--orange);
+    }
+
+    /* DECK FOLDERS */
+    .deck-folder-hdr {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: .5px solid var(--sep);
+      transition: background .1s;
+    }
+
+    .deck-folder-hdr:hover {
+      background: var(--bg2);
+    }
+
+    .deck-folder-name {
+      font-size: 13px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .deck-folder-count {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .deck-folder-body {
+      background: var(--bg2);
+      padding: 4px 8px;
+    }
+
+    .deck-folder-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .1s;
+      margin: 2px 0;
+    }
+
+    .deck-folder-item:hover {
+      background: var(--bg);
+    }
+
+    .deck-folder-item.active {
+      background: var(--pink3);
+    }
+
+    .deck-folder-item.active .deck-item-name {
+      color: var(--pink-text);
+      font-weight: 600;
+    }
+
+    .deck-item-name {
+      font-size: 13px;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .deck-item-count {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .ar-lib-toolbar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .ar-lib-btn {
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: .5px solid var(--sep2);
+      background: var(--bg);
+      color: var(--text2);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--sf);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all .1s;
+    }
+
+    .ar-lib-btn:hover {
+      border-color: var(--pink);
+      color: var(--pink-text);
+      background: var(--pink3);
+    }
+
+    .ar-lib-btn.primary {
+      background: var(--pink);
+      color: var(--pink-text);
+      border-color: var(--pink);
+    }
+
+    /* GIZMO-STYLE CARD BUILDER */
+    .deck-builder-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .deck-builder-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .deck-builder-title {
+      font-size: 18px;
+      font-weight: 700;
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: var(--sf);
+      color: var(--text);
+      outline: none;
+      letter-spacing: -.3px;
+    }
+
+    .deck-builder-title:focus {
+      outline: none;
+    }
+
+    .deck-play-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--pink2);
+      border-radius: 10px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+
+    .deck-play-strip:hover {
+      opacity: .88;
+    }
+
+    .deck-play-strip-lbl {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--pink-text);
+      flex: 1;
+    }
+
+    .deck-play-strip-count {
+      font-size: 12px;
+      color: var(--pink-text);
+      opacity: .7;
+    }
+
+    .gizmo-card {
+      background: var(--bg);
+      border: .5px solid var(--sep);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .gizmo-card-hdr {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      gap: 8px;
+      border-bottom: .5px solid var(--sep);
+      background: var(--bg2);
+    }
+
+    .gizmo-type-badge {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    .gizmo-card-body {
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .gizmo-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .gizmo-field-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .gizmo-inp {
+      width: 100%;
+      border: .5px solid var(--sep2);
+      border-radius: 7px;
+      padding: 7px 10px;
+      font-size: 13px;
+      font-family: var(--sf);
+      color: var(--text);
+      background: var(--bg2);
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .gizmo-inp:focus {
+      border-color: var(--pink);
+      background: var(--bg);
+    }
+
+    .gizmo-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .gizmo-row .gizmo-inp {
+      flex: 1;
+    }
+
+    .gizmo-add-type {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .gizmo-type-btn {
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: .5px solid var(--sep2);
+      background: var(--bg);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--sf);
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all .1s;
+    }
+
+    .gizmo-type-btn:hover {
+      border-color: var(--pink);
+      color: var(--pink-text);
+      background: var(--pink3);
+    }
+
+    /* GWA */
+    .gwa-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .gwa-hero {
+      background: var(--bg);
+      border-radius: var(--r3);
+      padding: 24px;
+      border: .5px solid var(--sep);
+      position: sticky;
+      top: 0;
+    }
+
+    .gwa-num {
+      font-size: 64px;
+      font-weight: 700;
+      letter-spacing: -3px;
+      line-height: 1;
+    }
+
+    .gwa-badge-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .subj-tbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .subj-tbl th {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 9px 14px;
+      background: var(--bg);
+      border-bottom: .5px solid var(--sep);
+      text-align: left;
+    }
+
+    .subj-tbl th.c {
+      text-align: center;
+    }
+
+    .subj-tbl td {
+      padding: 9px 14px;
+      border-bottom: .5px solid var(--sep);
+      vertical-align: middle;
+    }
+
+    .subj-tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .subj-tbl tr:hover td {
+      background: var(--bg2);
+    }
+
+    .subj-sel {
+      width: 106px;
+      height: 32px;
+      border: .5px solid var(--sep2);
+      border-radius: 6px;
+      background: var(--bg2);
+      text-align: center;
+      font-size: 13px;
+      font-family: var(--sf);
+      color: var(--text);
+      outline: none;
+      display: block;
+      margin: 0 auto;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+
+    .subj-sel:focus {
+      border-color: var(--pink);
+      background: var(--bg);
+    }
+
+    .g-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 0 10px;
+      min-width: 52px;
+    }
+
+    .g1 {
+      background: rgba(52, 199, 89, .15);
+      color: #248A3D;
+    }
+
+    .g2 {
+      background: var(--pink2);
+      color: var(--pink-text);
+    }
+
+    .g3 {
+      background: rgba(255, 149, 0, .12);
+      color: #C93400;
+    }
+
+    .g4 {
+      background: rgba(255, 59, 48, .12);
+      color: var(--red);
+    }
+
+    .directors-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 14px;
+      background: var(--pink2);
+      color: var(--pink-text);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .1px;
+    }
+
+    /* Percentage Reference Card */
+    .pct-ref-card {
+      background: var(--bg);
+      border: .5px solid var(--sep);
+      border-radius: var(--r);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .pct-ref-title {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 10px;
+    }
+
+    .pct-ref-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+    }
+
+    .pct-ref-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      padding: 3px 7px;
+      border-radius: 5px;
+      background: var(--bg2);
+    }
+
+    .pct-ref-pct {
+      color: var(--text2);
+      font-weight: 500;
+    }
+
+    .pct-ref-grade {
+      color: var(--pink-text);
+      font-weight: 700;
+    }
+
+    /* WORKSPACE */
+    .ws-layout {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .ws-filetree {
+      width: 210px;
+      min-width: 210px;
+      background: var(--bg);
+      border-right: .5px solid var(--sep);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .ws-filetree::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ft-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 10px 6px;
+      border-bottom: .5px solid var(--sep);
+      flex-shrink: 0;
+    }
+
+    .ft-toolbar-btn {
+      flex: 1;
+      height: 28px;
+      border-radius: 6px;
+      border: .5px solid var(--sep);
+      background: var(--bg2);
+      color: var(--pink-text);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--sf);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: background .1s;
+    }
+
+    .ft-toolbar-btn:hover {
+      background: var(--pink3);
+    }
+
+    .ft-tree-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 0;
+    }
+
+    .ft-tree-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ft-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: background .1s;
+    }
+
+    .ft-row:hover {
+      background: var(--bg2);
+    }
+
+    .ft-row.active {
+      background: var(--pink3);
+    }
+
+    .ft-row.active .ft-lbl {
+      color: var(--pink-text);
+      font-weight: 500;
+    }
+
+    .ft-row.drag-over {
+      border: 1.5px dashed var(--pink) !important;
+      background: var(--pink3);
+    }
+
+    .ft-ico {
+      width: 16px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ft-lbl {
+      font-size: 13px;
+      color: var(--text2);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ft-actions {
+      display: flex;
+      gap: 2px;
+      opacity: 0;
+      transition: opacity .1s;
+    }
+
+    .ft-row:hover .ft-actions {
+      opacity: 1;
+    }
+
+    .ft-act-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text3);
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    .ft-act-btn:hover {
+      background: var(--bg3);
+      color: var(--red);
+    }
+
+    /* Editor + Quill */
+    .ws-editor {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+      flex: 1;
+    }
+
+    .ws-toolbar {
+      background: var(--bg);
+      border-bottom: .5px solid var(--sep);
+      padding: 8px 16px;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      align-items: center;
+    }
+
+    .ws-tool {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      cursor: pointer;
+      transition: background .1s;
+      border: none;
+      background: transparent;
+      font-family: var(--sf);
+    }
+
+    .ws-tool:hover {
+      background: var(--bg2);
+    }
+
+    .ws-tool.active {
+      background: var(--pink2);
+      color: var(--pink-text);
+    }
+
+    #editor-container {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .ql-snow.ql-toolbar {
+      display: none;
+    }
+
+    .ql-container.ql-snow {
+      border: none !important;
+    }
+
+    .ql-editor {
+      padding: 20px 28px;
+      font-family: var(--sf) !important;
+      font-size: 15px;
+      line-height: 1.8;
+      min-height: 300px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .ql-editor:focus {
+      outline: none;
+    }
+
+    .ql-editor img {
+      max-width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      display: block;
+      margin: 8px 0;
+    }
+
+    .ql-editor img.resizable-img {
+      position: relative;
+    }
+
+    /* image resize handle */
+    .img-resize-wrap {
+      display: inline-block;
+      position: relative;
+      line-height: 0;
+    }
+
+    .img-resize-wrap img {
+      display: block;
+    }
+
+    .img-resize-handle {
+      position: absolute;
+      right: -5px;
+      bottom: -5px;
+      width: 12px;
+      height: 12px;
+      background: var(--pink-text);
+      border-radius: 3px;
+      cursor: se-resize;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+
+    .img-resize-wrap:hover .img-resize-handle {
+      opacity: 1;
+    }
+
+    /* Divider handle */
+    .ws-divider-handle {
+      width: 6px;
+      background: var(--sep);
+      cursor: col-resize;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: background .15s;
+    }
+
+    .ws-divider-handle:hover {
+      background: var(--pink);
+    }
+
+    .ws-divider-handle::after {
+      content: '';
+      width: 2px;
+      height: 36px;
+      background: rgba(0, 0, 0, .1);
+      border-radius: 1px;
+      position: absolute;
+    }
+
+    /* Recall side pane */
+    .ws-recall {
+      width: 340px;
+      min-width: 200px;
+      background: var(--bg2);
+      border-left: .5px solid var(--sep);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .ws-recall-hdr {
+      background: var(--bg);
+      border-bottom: .5px solid var(--sep);
+      padding: 12px 14px;
+      flex-shrink: 0;
+    }
+
+    .ws-recall-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .ws-recall-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .ws-recall-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mini-card {
+      margin: 6px 10px;
+      padding: 10px;
+      background: var(--bg);
+      border-radius: 10px;
+      border: .5px solid var(--sep);
+    }
+
+    .mini-type {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+
+    .mini-content {
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .mini-item {
+      font-size: 11px;
+      color: var(--text);
+      padding: 3px 8px;
+      background: var(--bg2);
+      border-radius: 5px;
+      margin: 2px 0;
+      display: flex;
+      gap: 6px;
+    }
+
+    .mini-item-n {
+      color: var(--text3);
+      font-weight: 700;
+    }
+
+    .mini-pair {
+      font-size: 11px;
+      color: var(--pink-text);
+      padding: 3px 8px;
+      background: var(--pink3);
+      border-radius: 5px;
+      margin: 2px 0;
+    }
+
+    /* split mode active state for toggle button */
+    #btn-split-toggle.split-on {
+      background: var(--pink2);
+      color: var(--pink-text);
+      border-color: var(--pink);
+    }
+
+    /* ACTIVE RECALL */
+    .ar-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .ar-folder {
+      background: var(--bg);
+      border-radius: var(--r);
+      margin-bottom: 10px;
+      border: .5px solid var(--sep);
+      overflow: hidden;
+    }
+
+    .ar-fhdr {
+      display: flex;
+      align-items: center;
+      padding: 14px;
+      gap: 10px;
+    }
+
+    .ar-fico {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ar-fname {
+      font-size: 15px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .ar-fcount {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    .ar-set {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px 10px 48px;
+      border-top: .5px solid var(--sep);
+      gap: 10px;
+      cursor: pointer;
+      transition: background .1s;
+    }
+
+    .ar-set:hover {
+      background: var(--bg2);
+    }
+
+    .ar-set-lbl {
+      font-size: 14px;
+      flex: 1;
+    }
+
+    .ex-card {
+      background: var(--bg);
+      border-radius: var(--r);
+      margin-bottom: 14px;
+      padding: 22px 24px;
+      border: .5px solid var(--sep);
+    }
+
+    .ex-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .ex-type {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .ex-inp {
+      width: 100%;
+      border: .5px solid var(--sep);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 14px;
+      font-family: var(--sf);
+      color: var(--text);
+      background: var(--bg2);
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .ex-inp:focus {
+      border-color: var(--pink);
+      background: var(--bg);
+    }
+
+    .ex-inp-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+      margin-top: 12px;
+    }
+
+    .ex-delete {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text3);
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-left: auto;
+      font-family: var(--sf);
+    }
+
+    .ex-delete:hover {
+      background: rgba(255, 59, 48, .08);
+      color: var(--red);
+    }
+
+    .add-btn {
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1.5px dashed var(--sep2);
+      color: var(--pink-text);
+      cursor: pointer;
+      background: var(--pink3);
+      margin-bottom: 10px;
+      transition: background .1s;
+    }
+
+    .add-btn:hover {
+      background: var(--pink2);
+    }
+
+    .add-menu {
+      background: var(--bg);
+      border-radius: var(--r);
+      border: .5px solid var(--sep);
+      overflow: hidden;
+      margin-bottom: 10px;
+      display: none;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+    }
+
+    .add-opt {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: .5px solid var(--sep);
+      cursor: pointer;
+      transition: background .1s;
+    }
+
+    .add-opt:last-child {
+      border-bottom: none;
+    }
+
+    .add-opt:hover {
+      background: var(--bg2);
+    }
+
+    .add-opt-ico {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+
+    .add-opt-lbl {
+      font-size: 14px;
+      flex: 1;
+      font-weight: 600;
+    }
+
+    .play-big {
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      background: var(--pink);
+      color: var(--pink-text);
+      cursor: pointer;
+      margin-bottom: 14px;
+      border: none;
+      width: 100%;
+      transition: opacity .15s;
+      font-family: var(--sf);
+    }
+
+    .play-big:hover {
+      opacity: .88;
+    }
+
+    .deck-name-inp {
+      width: 100%;
+      border: .5px solid var(--sep);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 16px;
+      font-family: var(--sf);
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    .deck-name-inp:focus {
+      border-color: var(--pink);
+    }
+
+    /* PLAY MODE */
+    .play-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .prog-strip {
+      height: 3px;
+      background: var(--sep);
+      flex-shrink: 0;
+    }
+
+    .prog-fill {
+      height: 100%;
+      background: var(--pink);
+      border-radius: 1px;
+      transition: width .4s;
+    }
+
+    .flash-card {
+      border-radius: 16px;
+      background: var(--bg);
+      border: .5px solid var(--sep);
+      perspective: 1000px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .flash-inner {
+      transform-style: preserve-3d;
+      transition: transform .5s cubic-bezier(.4, 0, .2, 1);
+      position: relative;
+      height: 200px;
+    }
+
+    .flash-inner.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flash-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      border-radius: 16px;
+    }
+
+    .flash-back {
+      transform: rotateY(180deg);
+      background: var(--pink2);
+    }
+
+    .flash-q {
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .flash-hint {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    .flash-a {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--pink-text);
+      text-align: center;
+    }
+
+    .score-btns {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .score-btn {
+      flex: 1;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity .12s;
+      font-family: var(--sf);
+    }
+
+    .score-btn:hover {
+      opacity: .82;
+    }
+
+    .order-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: .5px solid var(--sep);
+      border-radius: 10px;
+      user-select: none;
+    }
+
+    .order-item.correct {
+      border-color: var(--green) !important;
+      background: rgba(52, 199, 89, .08) !important;
+    }
+
+    .order-item.incorrect {
+      border-color: var(--red) !important;
+      background: rgba(255, 59, 48, .08) !important;
+    }
+
+    .order-rank {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text3);
+      flex-shrink: 0;
+    }
+
+    .order-text {
+      font-size: 14px;
+      flex: 1;
+    }
+
+    .order-arrows {
+      display: flex;
+      gap: 4px;
+    }
+
+    .order-arrow {
+      background: none;
+      border: .5px solid var(--sep);
+      border-radius: 5px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .order-arrow:hover {
+      background: var(--bg2);
+    }
+
+    .blanks-sentence {
+      font-size: 15px;
+      line-height: 2.1;
+      margin-bottom: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .blank-input {
+      height: 34px;
+      min-width: 100px;
+      max-width: 200px;
+      border: 1.5px solid var(--pink);
+      border-radius: 7px;
+      padding: 0 10px;
+      font-size: 14px;
+      font-family: var(--sf);
+      text-align: center;
+      outline: none;
+      background: var(--pink3);
+    }
+
+    .blank-input.correct {
+      background: rgba(52, 199, 89, .1);
+      border-color: var(--green);
+    }
+
+    .blank-input.wrong {
+      background: rgba(255, 59, 48, .08);
+      border-color: var(--red);
+    }
+
+    .blank-answer-reveal {
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 600;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .match-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .match-col {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .match-card {
+      padding: 10px 12px;
+      background: var(--bg);
+      border: .5px solid var(--sep);
+      border-radius: 10px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .15s;
+      user-select: none;
+    }
+
+    .match-card:hover {
+      border-color: var(--pink);
+      background: var(--pink3);
+    }
+
+    .match-card.selected {
+      border-color: var(--pink);
+      background: var(--pink2);
+    }
+
+    .match-card.matched-ok {
+      border-color: var(--green) !important;
+      background: rgba(52, 199, 89, .1) !important;
+      cursor: default;
+    }
+
+    .match-card.flash-wrong {
+      border-color: var(--red) !important;
+      background: rgba(255, 59, 48, .08) !important;
+    }
+
+    /* SYNC INDICATOR */
+    #sync-indicator {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: var(--bg);
+      border: .5px solid var(--sep);
+      color: var(--text3);
+      opacity: 0;
+      transition: opacity .3s;
+      z-index: 100;
+    }
+
+    #sync-indicator.visible {
+      opacity: 1;
+    }
+
+    #sync-indicator.saving {
+      color: var(--orange);
+    }
+
+    #sync-indicator.saved {
+      color: var(--green);
+    }
+
+    #sync-indicator.error {
+      color: var(--red);
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 800;
+    }
+
+    .modal-overlay.hidden {
+      display: none;
+    }
+
+    .modal-box {
+      background: var(--bg);
+      border-radius: 16px;
+      padding: 24px;
+      width: 320px;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, .16);
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .modal-inp {
+      width: 100%;
+      height: 40px;
+      border: .5px solid var(--sep2);
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 14px;
+      font-family: var(--sf);
+      color: var(--text);
+      background: var(--bg2);
+      outline: none;
+      margin-bottom: 14px;
+    }
+
+    .modal-inp:focus {
+      border-color: var(--pink);
+      background: var(--bg);
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .modal-btn {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--sf);
+    }
+
+    .modal-btn-cancel {
+      background: var(--bg3);
+      color: var(--text2);
+    }
+
+    .modal-btn-ok {
+      background: var(--pink);
+      color: var(--pink-text);
+      font-weight: 700;
+    }
+
+    svg {
+      display: block;
+    }
+
+    @media(max-width:700px) {
+      #sb {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform .26s cubic-bezier(.32, .72, 0, 1);
+      }
+
+      #sb.mob-open {
+        transform: translateX(0);
+      }
+
+      #sb-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .3);
+        z-index: 40;
+      }
+
+      #sb-overlay.open {
+        display: block;
+      }
+
+      .gwa-layout,
+      .ar-layout,
+      .play-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .ws-recall,
+      .ws-divider-handle {
+        display: none;
+      }
+    }
+
+    @media(max-width:900px) {
+      .ar-layout {
+        grid-template-columns: 260px 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Hidden PFP input -->
+  <input type="file" id="pfp-file-input" accept="image/*" style="display:none;">
+
+  <!-- AUTH OVERLAY -->
+  <div id="auth-overlay">
+    <div class="auth-box">
+      <div class="auth-logo">for <span>katsu</span></div>
+      <div class="auth-sub">sign in to sync your notes &amp; grades across devices</div>
+      <div id="auth-form-login">
+        <div class="auth-label">email</div>
+        <input class="auth-input" id="auth-email" type="email" placeholder="you@example.com" autocomplete="email">
+        <div class="auth-label">password</div>
+        <input class="auth-input" id="auth-password" type="password" placeholder="••••••••"
+          autocomplete="current-password">
+        <button class="auth-btn" id="auth-login-btn" onclick="authLogin()">sign in</button>
+        <div class="auth-err" id="auth-err"></div>
+        <div class="auth-switch">no account? <a onclick="authToggle('signup')">sign up</a></div>
+        <div style="height:.5px;background:var(--sep2);margin:18px 0 14px;"></div>
+        <button onclick="useOffline()"
+          style="width:100%;height:40px;border-radius:10px;border:1px solid var(--sep2);background:transparent;color:var(--text3);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sf);transition:background .15s;"
+          onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">continue
+          without account (local only)</button>
+      </div>
+      <div id="auth-form-signup" style="display:none;">
+        <div class="auth-label">email</div>
+        <input class="auth-input" id="auth-email-su" type="email" placeholder="you@example.com">
+        <div class="auth-label">password</div>
+        <input class="auth-input" id="auth-password-su" type="password" placeholder="min 6 characters">
+        <button class="auth-btn" id="auth-signup-btn" onclick="authSignUp()">create account</button>
+        <div class="auth-err" id="auth-err-su"></div>
+        <div class="auth-switch">have an account? <a onclick="authToggle('login')">sign in</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-title" id="modal-title">new folder</div>
+      <input class="modal-inp" id="modal-inp" placeholder="name…" onkeydown="if(event.key==='Enter')modalConfirm()">
+      <div class="modal-btns">
+        <button class="modal-btn modal-btn-cancel" onclick="modalClose()">cancel</button>
+        <button class="modal-btn modal-btn-ok" onclick="modalConfirm()">create</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="sb-overlay" onclick="closeMobSb()"></div>
+
+  <!-- SYNC -->
+  <div id="sync-indicator">saved</div>
+
+  <!-- SIDEBAR -->
+  <div id="sb">
+    <div class="sb-top">
+      <button class="sb-toggle" onclick="toggleSb()"><span></span><span></span><span></span></button>
+      <span class="sb-appname">for <em>katsu</em></span>
+    </div>
+    <div class="sb-profile">
+      <div class="sb-pfp-wrap" id="sb-pfp-wrap" title="Click to change photo">
+        <div class="sb-pfp" id="sb-pfp-el">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(124,77,107,.8)" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+          </svg>
+        </div>
+        <div class="sb-pfp-overlay">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+        </div>
+      </div>
+      <div class="sb-profile-info">
+        <div class="sb-pname-wrap">
+          <div class="sb-pname" id="sb-username" onclick="startEditName()" title="Click to edit">—</div>
+        </div>
+        <div class="sb-phandle" id="sb-email">loading…</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-sec">main</div>
+      <button class="nav-btn active" data-page="home" onclick="goPage('home')">
+        <div class="nav-ico">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </div>
+        <span class="nav-lbl">home</span>
+      </button>
+      <button class="nav-btn" data-page="workspace" onclick="goPage('workspace')">
+        <div class="nav-ico">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+          </svg>
+        </div>
+        <span class="nav-lbl">workspace</span>
+      </button>
+      <button class="nav-btn" data-page="recall" onclick="goPage('recall')">
+        <div class="nav-ico">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8m-4-4v4" />
+          </svg>
+        </div>
+        <span class="nav-lbl">active recall</span>
+      </button>
+      <button class="nav-btn" data-page="gwa" onclick="goPage('gwa')">
+        <div class="nav-ico">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+        </div>
+        <span class="nav-lbl">gwa</span>
+      </button>
+      <button class="nav-btn" data-page="play" onclick="goPage('play')">
+        <div class="nav-ico">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+        </div>
+        <span class="nav-lbl">play mode</span>
+      </button>
+      <div class="sb-sec">account</div>
+      <button class="sb-signout" onclick="authSignOut()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        <span class="nav-lbl">sign out</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="topbar">
+        <div class="topbar-title" id="home-greeting">home</div>
+        <span class="home-quarter-badge" id="home-quarter-badge">Q3 AY 2024–25</span>
+      </div>
+      <div class="page-body">
+        <div class="home-grid" id="home-stats"></div>
+        <div class="home-section-lbl">recents</div>
+        <div class="home-recents" id="home-recents"></div>
+        <div class="home-section-lbl" style="margin-top:18px;">quick actions</div>
+        <div class="home-actions-grid" id="home-actions"></div>
+      </div>
+    </div>
+
+    <!-- GWA -->
+    <div class="page" id="page-gwa">
+      <div class="topbar">
+        <div class="topbar-title">gwa calculator</div>
+        <span id="gwa-honor-topbar" style="display:none;"></span>
+      </div>
+      <div class="page-body">
+        <div class="gwa-quarter-tabs" id="gwa-quarter-tabs">
+          <button class="gwa-qtab active" data-q="0" onclick="switchGWAQuarter(0)">Q1</button>
+          <button class="gwa-qtab" data-q="1" onclick="switchGWAQuarter(1)">Q2</button>
+          <button class="gwa-qtab" data-q="2" onclick="switchGWAQuarter(2)">Q3</button>
+          <button class="gwa-qtab" data-q="3" onclick="switchGWAQuarter(3)">Q4</button>
+        </div>
+        <div class="gwa-layout">
+          <!-- LEFT COLUMN: hero + reference card -->
+          <div>
+            <div class="gwa-hero" style="margin-bottom:16px;">
+              <div
+                style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:6px;"
+                id="gwa-quarter-label">Q1 — final grade</div>
+              <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+                <div class="gwa-num" id="gwa-display">—</div>
+                <span id="gwa-honor-badge" style="display:none;"></span>
+              </div>
+              <div class="gwa-badge-row" id="gwa-badges"></div>
+              <div id="gwa-improve-tip" class="gwa-improve-tip" style="display:none;"></div>
+              <div style="height:.5px;background:var(--sep);margin:14px 0;"></div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.65;" id="gwa-formula-note">
+                Select your final grade per subject. Q1 only has a final grade.
+              </div>
+            </div>
+
+            <!-- Percentage Reference Card -->
+            <div class="pct-ref-card">
+              <div class="pct-ref-title">grade scale reference</div>
+              <div class="pct-ref-grid">
+                <div class="pct-ref-row"><span class="pct-ref-pct">96+</span><span class="pct-ref-grade">1.00</span>
+                </div>
+                <div class="pct-ref-row"><span class="pct-ref-pct">90 – 95</span><span class="pct-ref-grade">1.25</span>
+                </div>
+                <div class="pct-ref-row"><span class="pct-ref-pct">84 – 89</span><span class="pct-ref-grade">1.50</span>
+                </div>
+                <div class="pct-ref-row"><span class="pct-ref-pct">78 – 83</span><span class="pct-ref-grade">1.75</span>
+                </div>
+                <div class="pct-ref-row"><span class="pct-ref-pct">72 – 77</span><span class="pct-ref-grade">2.00</span>
+                </div>
+                <div class="pct-ref-row"><span class="pct-ref-pct">66 – 71</span><span class="pct-ref-grade">2.25</span>
+                </div>
+                <div class="pct-ref-row"><span class="pct-ref-pct">60 – 65</span><span class="pct-ref-grade">2.50</span>
+                </div>
+                <div class="pct-ref-row"><span class="pct-ref-pct">55 – 59</span><span class="pct-ref-grade">2.75</span>
+                </div>
+                <div class="pct-ref-row"><span class="pct-ref-pct">50 – 54</span><span class="pct-ref-grade">3.00</span>
+                </div>
+                <div class="pct-ref-row"><span class="pct-ref-pct">40 – 49</span><span class="pct-ref-grade">4.00</span>
+                </div>
+                <div class="pct-ref-row" style="grid-column:span 2;"><span class="pct-ref-pct">Below 40</span><span
+                    class="pct-ref-grade">5.00</span></div>
+              </div>
+            </div>
+
+            <!-- Comparison section -->
+            <div class="gwa-compare-section" id="gwa-compare-section" style="display:none;">
+              <div class="pct-ref-title" style="margin-bottom:10px;">quarter comparison</div>
+              <div class="gwa-compare-grid" id="gwa-compare-grid"></div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: table -->
+          <div>
+            <div class="card">
+              <table class="subj-tbl">
+                <thead id="gwa-thead">
+                  <tr>
+                    <th>subject</th>
+                    <th class="c">final grade</th>
+                    <th class="c">gwa contribution</th>
+                  </tr>
+                </thead>
+                <tbody id="gwa-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE -->
+    <div class="page" id="page-workspace">
+      <div class="topbar">
+        <div class="topbar-title">workspace</div>
+        <span class="pill pill-gray" id="ws-topbar-file">no file open</span>
+        <div style="flex:1;"></div>
+        <button id="btn-split-toggle" onclick="toggleSplitMode()" title="Toggle split view"
+          style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:.5px solid var(--sep2);background:var(--bg2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sf);transition:all .15s;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <line x1="12" y1="3" x2="12" y2="21" />
+          </svg>
+          Split
+        </button>
+      </div>
+      <div class="ws-layout">
+        <!-- File tree -->
+        <div class="ws-filetree">
+          <div class="ft-toolbar">
+            <button class="ft-toolbar-btn" id="btn-new-folder" title="New Folder">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+              </svg>
+              Folder
+            </button>
+            <button class="ft-toolbar-btn" id="btn-new-file" title="New Note">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="12" y1="18" x2="12" y2="12" />
+                <line x1="9" y1="15" x2="15" y2="15" />
+              </svg>
+              Note
+            </button>
+          </div>
+          <div class="ft-tree-scroll" id="ws-filetree-root"></div>
+        </div>
+
+        <!-- Quill Editor -->
+        <div class="ws-editor">
+          <div class="ws-toolbar" id="ws-custom-toolbar">
+            <button class="ws-tool" id="ql-bold" title="Bold"><b>B</b></button>
+            <button class="ws-tool" id="ql-italic" title="Italic"><i>I</i></button>
+            <button class="ws-tool" id="ql-underline" title="Underline"><u>U</u></button>
+            <button class="ws-tool" id="ql-h1" title="Heading 1">H1</button>
+            <button class="ws-tool" id="ql-h2" title="Heading 2">H2</button>
+            <button class="ws-tool" id="ql-bullet" title="Bullet List">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+            </button>
+            <button class="ws-tool" id="ql-blockquote" title="Blockquote">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 2v6c0 1.25.756 2.017 2 2h3l-.5 3.5L10 21zm11 0c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 2v6c0 1.25.757 2.017 2 2h3l-.5 3.5L21 21z" />
+              </svg>
+            </button>
+            <button class="ws-tool" id="ql-img" title="Insert Image" onclick="insertImageIntoEditor()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg>
+            </button>
+            <div style="flex:1;"></div>
+            <span style="font-size:11px;color:var(--text3);" id="ws-file-meta">—</span>
+          </div>
+          <div id="editor-container"></div>
+        </div>
+
+        <div class="ws-divider-handle" id="ws-drag-handle" style="display:none;"></div>
+
+        <!-- Recall side pane — hidden by default -->
+        <div class="ws-recall" id="ws-recall-pane" style="display:none;">
+          <div class="ws-recall-hdr">
+            <div class="ws-recall-title">active recall — current deck</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px;" id="ws-recall-sub">no deck selected</div>
+            <button class="play-big" style="height:34px;font-size:12px;margin:10px 0 0;" onclick="goPage('play')">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--pink-text)">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+              Play / shuffle
+            </button>
+          </div>
+          <div class="ws-recall-scroll" id="ws-recall-inner"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVE RECALL -->
+    <div class="page" id="page-recall">
+      <div class="topbar">
+        <div class="topbar-title">active recall</div>
+        <span class="pill pill-gray">build &amp; manage study decks</span>
+      </div>
+      <div class="page-body">
+        <div class="ar-layout">
+          <div id="ar-library"></div>
+          <div id="ar-builder"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAY MODE -->
+    <div class="page" id="page-play">
+      <div class="topbar">
+        <div class="topbar-title">play mode <span style="font-size:13px;color:var(--text3);font-weight:400;"
+            id="play-title-sub"></span></div>
+        <span class="pill pill-green" id="play-right-count">0 right</span>
+        <span class="pill pill-red" style="margin-left:4px;" id="play-wrong-count">0 wrong</span>
+        <button onclick="goPage('recall')"
+          style="margin-left:10px;background:var(--bg3);border:none;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sf);">back</button>
+      </div>
+      <div class="prog-strip">
+        <div class="prog-fill" id="play-progress" style="width:0%;"></div>
+      </div>
+      <div class="page-body">
+        <div class="play-layout">
+          <div id="play-left"></div>
+          <div id="play-right"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end #main -->
+
+  <script>
+    "use strict";
+
+    /* ══════════════════════════════════════════════════════════════
+       FIREBASE HELPERS — thin wrappers so the rest of the code
+       stays unchanged (fb.auth, fb.db via window globals set above)
+    ══════════════════════════════════════════════════════════════ */
+    var fb = {
+      get auth() { return window._fbAuth; },
+      get db() { return window._fbDb; },
+      get fns() { return window._fbFns; }
+    };
+
+    let currentUser = null;
+
+    /* ══════════════════════════════════════════════════════════════
+       UTILITY — DEBOUNCE
+    ══════════════════════════════════════════════════════════════ */
+    function debounce(fn, ms) {
+      var timer;
+      return function () {
+        var args = arguments, ctx = this;
+        clearTimeout(timer);
+        timer = setTimeout(function () { fn.apply(ctx, args); }, ms);
+      };
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       SYNC INDICATOR
+    ══════════════════════════════════════════════════════════════ */
+    function showSync(state, msg) {
+      var el = document.getElementById('sync-indicator');
+      el.textContent = msg || state;
+      el.className = 'visible ' + state;
+      clearTimeout(el._t);
+      if (state === 'saved') {
+        el._t = setTimeout(function () { el.classList.remove('visible'); }, 2000);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       AUTH
+    ══════════════════════════════════════════════════════════════ */
+    function authToggle(mode) {
+      document.getElementById('auth-form-login').style.display = mode === 'login' ? '' : 'none';
+      document.getElementById('auth-form-signup').style.display = mode === 'signup' ? '' : 'none';
+      document.getElementById('auth-err').textContent = '';
+      document.getElementById('auth-err-su').textContent = '';
+    }
+
+    async function authLogin() {
+      var email = document.getElementById('auth-email').value.trim();
+      var password = document.getElementById('auth-password').value;
+      var btn = document.getElementById('auth-login-btn');
+      var err = document.getElementById('auth-err');
+      if (!email || !password) { err.textContent = 'Please fill in all fields.'; return; }
+      btn.innerHTML = '<span class="auth-spinner"></span>signing in…';
+      btn.disabled = true;
+      err.textContent = '';
+      try {
+        var cred = await fb.fns.signInWithEmailAndPassword(fb.auth, email, password);
+        if (cred && cred.user && !appBooted) {
+          currentUser = cred.user;
+          document.getElementById('auth-overlay').classList.add('hidden');
+          document.getElementById('sb-email').textContent = currentUser.email || '';
+          var savedName = null;
+          try { savedName = localStorage.getItem('display_name_' + currentUser.uid); } catch (e) { }
+          document.getElementById('sb-username').textContent = savedName || (currentUser.email || '').split('@')[0] || 'katsu';
+          await hydrateAll();
+          appBooted = true;
+          initApp();
+        }
+      } catch (e) {
+        var msg = e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found'
+          ? 'Invalid email or password.' : (e.message || 'Something went wrong.');
+        err.textContent = msg;
+        btn.innerHTML = 'sign in';
+        btn.disabled = false;
+      }
+    }
+
+    async function authSignUp() {
+      var email = document.getElementById('auth-email-su').value.trim();
+      var password = document.getElementById('auth-password-su').value;
+      var btn = document.getElementById('auth-signup-btn');
+      var err = document.getElementById('auth-err-su');
+      if (!email || !password) { err.textContent = 'Please fill in all fields.'; return; }
+      if (password.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
+      btn.innerHTML = '<span class="auth-spinner"></span>creating account…';
+      btn.disabled = true;
+      try {
+        await fb.fns.createUserWithEmailAndPassword(fb.auth, email, password);
+        err.style.color = 'var(--green)';
+        err.textContent = 'Account created! You are now signed in.';
+        btn.innerHTML = 'create account';
+        btn.disabled = false;
+      } catch (e) {
+        var msg = e.code === 'auth/email-already-in-use'
+          ? 'An account with this email already exists.' : (e.message || 'Something went wrong.');
+        err.textContent = msg;
+        btn.innerHTML = 'create account';
+        btn.disabled = false;
+      }
+    }
+
+    async function authSignOut() {
+      await fb.fns.signOut(fb.auth);
+      location.reload();
+    }
+
+    function useOffline() {
+      currentUser = null;
+      document.getElementById('auth-overlay').classList.add('hidden');
+      document.getElementById('sb-username').textContent = 'katsu';
+      document.getElementById('sb-email').textContent = 'local only';
+      // Load from localStorage
+      var gwaRow = lcRead('gwa_data');
+      if (gwaRow && gwaRow.subjects) {
+        try {
+          var saved = typeof gwaRow.subjects === 'string' ? JSON.parse(gwaRow.subjects) : gwaRow.subjects;
+          SUBJECTS = DEFAULT_SUBJECTS.map(function (def) {
+            var match = saved.find(function (s) { return s.n === def.n; });
+            return match ? { n: def.n, w: def.w, p: match.p !== undefined ? match.p : null, t: match.t !== undefined ? match.t : null } : { n: def.n, w: def.w, p: null, t: null };
+          });
+        } catch (e) { SUBJECTS = JSON.parse(JSON.stringify(DEFAULT_SUBJECTS)); }
+      }
+      var wsRow = lcRead('workspace_data');
+      if (wsRow && wsRow.filetree) {
+        try { fileTree = typeof wsRow.filetree === 'string' ? JSON.parse(wsRow.filetree) : wsRow.filetree; } catch (e) { }
+      }
+      var deckRow = lcRead('decks_data');
+      if (deckRow && deckRow.decks) {
+        try {
+          studyDecks = typeof deckRow.decks === 'string' ? JSON.parse(deckRow.decks) : deckRow.decks;
+          if (studyDecks.length > 0) currentDeckId = studyDecks[0].id;
+        } catch (e) { }
+      }
+      appBooted = true;
+      initApp();
+    }
+
+
+    /* ══════════════════════════════════════════════════════════════
+       PROFILE — NAME EDITING (inline, no prompt)
+    ══════════════════════════════════════════════════════════════ */
+    function startEditName() {
+      var nameEl = document.getElementById('sb-username');
+      var currentName = nameEl.textContent;
+      var inp = document.createElement('input');
+      inp.className = 'sb-pname-inp';
+      inp.value = currentName;
+      nameEl.replaceWith(inp);
+      inp.focus(); inp.select();
+
+      function finishEdit() {
+        var newName = inp.value.trim() || currentName;
+        var newDiv = document.createElement('div');
+        newDiv.className = 'sb-pname';
+        newDiv.id = 'sb-username';
+        newDiv.title = 'Click to edit name';
+        newDiv.textContent = newName;
+        newDiv.addEventListener('click', startEditName);
+        inp.replaceWith(newDiv);
+        if (currentUser) {
+          try { localStorage.setItem('display_name_' + currentUser.uid, newName); } catch (e) { }
+        }
+      }
+      inp.addEventListener('blur', finishEdit);
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') inp.blur();
+        if (e.key === 'Escape') { inp.value = currentName; inp.blur(); }
+      });
+    }
+    document.getElementById('sb-username').addEventListener('click', startEditName);
+
+    /* ══════════════════════════════════════════════════════════════
+       PROFILE PICTURE — FileReader upload
+    ══════════════════════════════════════════════════════════════ */
+    document.getElementById('sb-pfp-wrap').addEventListener('click', function () {
+      document.getElementById('pfp-file-input').click();
+    });
+    document.getElementById('pfp-file-input').addEventListener('change', function (e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function (ev) {
+        var pfpEl = document.getElementById('sb-pfp-el');
+        pfpEl.innerHTML = '<img src="' + ev.target.result + '" alt="profile">';
+        if (currentUser) {
+          try { localStorage.setItem('pfp_' + currentUser.uid, ev.target.result); } catch (e) { }
+        }
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+
+    function loadSavedPfp() {
+      if (!currentUser) return;
+      try {
+        var saved = localStorage.getItem('pfp_' + currentUser.uid);
+        if (saved) document.getElementById('sb-pfp-el').innerHTML = '<img src="' + saved + '" alt="profile">';
+      } catch (e) { }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       FIRESTORE CRUD — with localStorage fallback
+       Each "table" is a Firestore doc at: users/{uid}/{table}
+    ══════════════════════════════════════════════════════════════ */
+    async function dbUpsert(table, data) {
+      showSync('saving', 'saving…');
+      if (!currentUser) { lcFallback(table, data); showSync('saved', 'saved locally'); return; }
+      try {
+        var ref = fb.fns.doc(fb.db, 'users', currentUser.uid, 'data', table);
+        await fb.fns.setDoc(ref, data, { merge: true });
+        lcFallback(table, data);
+        showSync('saved', 'saved ✓');
+      } catch (e) {
+        console.warn('dbUpsert fallback:', e.message);
+        lcFallback(table, data);
+        showSync('saved', 'saved locally');
+      }
+    }
+
+    async function dbGet(table) {
+      if (!currentUser) return lcRead(table);
+      try {
+        var ref = fb.fns.doc(fb.db, 'users', currentUser.uid, 'data', table);
+        var snap = await fb.fns.getDoc(ref);
+        if (snap.exists()) {
+          var data = snap.data();
+          lcFallback(table, data);
+          return data;
+        }
+      } catch (e) {
+        console.warn('dbGet fallback:', e.message);
+      }
+      return lcRead(table);
+    }
+
+    function lcFallback(table, data) {
+      try { localStorage.setItem('lc_' + table, JSON.stringify(data)); } catch (e) { }
+    }
+
+    function lcRead(table) {
+      try {
+        var s = localStorage.getItem('lc_' + table);
+        return s ? JSON.parse(s) : null;
+      } catch (e) { return null; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       APP STATE
+    ══════════════════════════════════════════════════════════════ */
+    // Grade options: value = grade number, label shown in dropdown
+    var GRADE_OPTIONS = [
+      { label: '1.00', grade: 1.00 },
+      { label: '1.25', grade: 1.25 },
+      { label: '1.50', grade: 1.50 },
+      { label: '1.75', grade: 1.75 },
+      { label: '2.00', grade: 2.00 },
+      { label: '2.25', grade: 2.25 },
+      { label: '2.50', grade: 2.50 },
+      { label: '2.75', grade: 2.75 },
+      { label: '3.00', grade: 3.00 },
+      { label: '4.00', grade: 4.00 },
+      { label: '5.00', grade: 5.00 },
+    ];
+
+    // Keep PCT_OPTIONS for backward compat (hydration may have old data)
+    var PCT_OPTIONS = [
+      { label: '96+', grade: 1.00 },
+      { label: '90-95', grade: 1.25 },
+      { label: '84-89', grade: 1.50 },
+      { label: '78-83', grade: 1.75 },
+      { label: '72-77', grade: 2.00 },
+      { label: '66-71', grade: 2.25 },
+      { label: '60-65', grade: 2.50 },
+      { label: '55-59', grade: 2.75 },
+      { label: '50-54', grade: 3.00 },
+      { label: '40-49', grade: 4.00 },
+      { label: '<40', grade: 5.00 },
+    ];
+
+    var DEFAULT_SUBJECTS = [
+      { n: 'Math', w: 1.3 },
+      { n: 'Research', w: 1.0 },
+      { n: 'Physics', w: 1.0 },
+      { n: 'Chemistry', w: 1.0 },
+      { n: 'Biology', w: 1.0 },
+      { n: 'CS', w: 1.0 },
+      { n: 'English', w: 1.0 },
+      { n: 'Filipino', w: 1.0 },
+      { n: 'SocSci', w: 1.0 },
+      { n: 'Full Stack', w: 1.0 },
+    ];
+
+    // quarters[q][subj] = { p: grade|null, t: grade|null, f: grade|null }
+    // Q1: only f (final). Q2–Q4: p (previous) + t (tentative) → computed quarter grade
+    var currentQuarter = 0; // 0=Q1, 1=Q2, 2=Q3, 3=Q4
+
+    function makeQuarterSubjects() {
+      return DEFAULT_SUBJECTS.map(function (s) { return { n: s.n, w: s.w, p: null, t: null, f: null }; });
+    }
+
+    var SUBJECTS = makeQuarterSubjects(); // kept for backward compat
+    var quarters = [makeQuarterSubjects(), makeQuarterSubjects(), makeQuarterSubjects(), makeQuarterSubjects()];
+    var deckFolders = []; // { id, name, expanded }
+    var fileTree = { folders: [], files: [] };
+    var studyDecks = [];
+    var currentFileId = null;
+    var currentDeckId = null;
+    var playRight = 0;
+    var playWrong = 0;
+    var quillEditor = null;
+    var quillSaveTimer = null;
+
+    /* ══════════════════════════════════════════════════════════════
+       HYDRATION — pull state from Firestore on login
+    ══════════════════════════════════════════════════════════════ */
+    async function hydrateAll() {
+      var gwaRow = await dbGet('gwa_data');
+      if (gwaRow) {
+        // New format: quarters array
+        if (gwaRow.quarters) {
+          try {
+            var savedQ = typeof gwaRow.quarters === 'string' ? JSON.parse(gwaRow.quarters) : gwaRow.quarters;
+            for (var qi = 0; qi < 4; qi++) {
+              if (savedQ[qi]) {
+                quarters[qi] = DEFAULT_SUBJECTS.map(function (def) {
+                  var match = (savedQ[qi] || []).find(function (s) { return s.n === def.n; });
+                  return match ? { n: def.n, w: def.w, p: match.p || null, t: match.t || null, f: match.f || null } : { n: def.n, w: def.w, p: null, t: null, f: null };
+                });
+              }
+            }
+          } catch (e) { }
+        } else if (gwaRow.subjects) {
+          // Legacy format: migrate to Q1
+          try {
+            var saved = typeof gwaRow.subjects === 'string' ? JSON.parse(gwaRow.subjects) : gwaRow.subjects;
+            quarters[0] = DEFAULT_SUBJECTS.map(function (def) {
+              var match = (saved || []).find(function (s) { return s.n === def.n; });
+              if (!match) return { n: def.n, w: def.w, p: null, t: null, f: null };
+              // Old data had p/t as pct label strings — convert to grade number
+              var fg = pctLabelToGrade(match.t) || pctLabelToGrade(match.p) || null;
+              return { n: def.n, w: def.w, p: null, t: null, f: fg };
+            });
+          } catch (e) { }
+        }
+      }
+
+      var wsRow = await dbGet('workspace_data');
+      if (wsRow && wsRow.filetree) {
+        try { fileTree = typeof wsRow.filetree === 'string' ? JSON.parse(wsRow.filetree) : wsRow.filetree; } catch (e) { }
+      }
+
+      var deckRow = await dbGet('decks_data');
+      if (deckRow) {
+        if (deckRow.decks) {
+          try {
+            studyDecks = typeof deckRow.decks === 'string' ? JSON.parse(deckRow.decks) : deckRow.decks;
+            if (studyDecks.length > 0) currentDeckId = studyDecks[0].id;
+          } catch (e) { }
+        }
+        if (deckRow.deckFolders) {
+          try { deckFolders = typeof deckRow.deckFolders === 'string' ? JSON.parse(deckRow.deckFolders) : deckRow.deckFolders; } catch (e) { }
+        }
+      }
+
+      loadSavedPfp();
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       DEBOUNCED SAVERS
+    ══════════════════════════════════════════════════════════════ */
+    var saveGWA = debounce(function () {
+      dbUpsert('gwa_data', { quarters: JSON.stringify(quarters) });
+    }, 500);
+
+    var saveWorkspace = debounce(function () {
+      dbUpsert('workspace_data', { filetree: JSON.stringify(fileTree) });
+    }, 600);
+
+    var saveDecks = debounce(function () {
+      dbUpsert('decks_data', { decks: JSON.stringify(studyDecks), deckFolders: JSON.stringify(deckFolders) });
+    }, 600);
+
+    /* ══════════════════════════════════════════════════════════════
+       GRADING ENGINE
+    ══════════════════════════════════════════════════════════════ */
+    function pctLabelToGrade(label) {
+      if (!label) return null;
+      // New format: grade number string
+      var n = parseFloat(label);
+      if (!isNaN(n)) return n;
+      // Legacy PCT label
+      for (var i = 0; i < PCT_OPTIONS.length; i++) {
+        if (PCT_OPTIONS[i].label === label) return PCT_OPTIONS[i].grade;
+      }
+      return null;
+    }
+
+    function transmute(raw) {
+      if (raw <= 1.1250) return 1.00;
+      if (raw <= 1.3750) return 1.25;
+      if (raw <= 1.6250) return 1.50;
+      if (raw <= 1.8750) return 1.75;
+      if (raw <= 2.1250) return 2.00;
+      if (raw <= 2.3750) return 2.25;
+      if (raw <= 2.6250) return 2.50;
+      if (raw <= 2.8750) return 2.75;
+      if (raw <= 3.5000) return 3.00;
+      if (raw <= 4.5000) return 4.00;
+      return 5.00;
+    }
+
+    function calcQuarterGrade(s, qIdx) {
+      if (qIdx === 0) {
+        // Q1: just final grade
+        return s.f !== null ? s.f : null;
+      }
+      // Q2–Q4: ((tentative×2)+previous)/3
+      var t = s.t, p = s.p;
+      if (t === null || p === null) return null;
+      return transmute(((t * 2) + p) / 3);
+    }
+
+    function gradeClass(g) {
+      if (!g) return 'pill-gray';
+      if (g <= 1.25) return 'g1';
+      if (g <= 2.00) return 'g2';
+      if (g <= 3.00) return 'g3';
+      return 'g4';
+    }
+
+    function calcGWA(qIdx) {
+      var subjs = quarters[qIdx !== undefined ? qIdx : currentQuarter];
+      var sumGW = 0, sumW = 0, count = 0;
+      for (var i = 0; i < subjs.length; i++) {
+        var s = subjs[i];
+        var q = calcQuarterGrade(s, qIdx !== undefined ? qIdx : currentQuarter);
+        if (q !== null) { sumGW += q * s.w; sumW += s.w; count++; }
+      }
+      if (count === 0) return null;
+      return parseFloat((sumGW / sumW).toFixed(4));
+    }
+
+    function updateGWADisplay() {
+      var gwa = calcGWA(currentQuarter);
+      var gwaStr = gwa !== null ? gwa.toFixed(2) : '—';
+      var d1 = document.getElementById('gwa-display');
+      if (d1) d1.textContent = gwaStr;
+
+      var badge = document.getElementById('gwa-honor-badge');
+      var topbar = document.getElementById('gwa-honor-topbar');
+      var isDL = (gwa !== null && gwa <= 1.50);
+
+      if (isDL) {
+        if (badge) { badge.className = 'directors-badge'; badge.innerHTML = '⭐ Director\'s Lister'; badge.style.display = 'inline-flex'; }
+        if (topbar) { topbar.className = 'directors-badge'; topbar.innerHTML = '⭐ Director\'s Lister'; topbar.style.display = 'inline-flex'; }
+        var tip = document.getElementById('gwa-improve-tip');
+        if (tip) tip.style.display = 'none';
+      } else {
+        if (badge) badge.style.display = 'none';
+        if (topbar) topbar.style.display = 'none';
+        // Show improvement tip
+        var tip2 = document.getElementById('gwa-improve-tip');
+        if (tip2 && gwa !== null) {
+          var subjs = quarters[currentQuarter];
+          var worst = null, worstG = -Infinity;
+          for (var i = 0; i < subjs.length; i++) {
+            var sg = calcQuarterGrade(subjs[i], currentQuarter);
+            if (sg !== null && sg > worstG) { worstG = sg; worst = subjs[i]; }
+          }
+          var needed = gwa - 1.50;
+          tip2.style.display = 'block';
+          if (worst) {
+            tip2.innerHTML = 'To reach Director\'s Lister (≤1.50), aim for <strong>1.00–1.25</strong> in <strong>' + escHtml(worst.n) + '</strong> and similar subjects. Current gap: <strong>' + needed.toFixed(2) + '</strong> above 1.50.';
+          } else {
+            tip2.innerHTML = 'Fill in all subjects to see what you need to improve to reach Director\'s Lister (GWA ≤ 1.50).';
+          }
+        } else if (tip2) {
+          tip2.style.display = 'none';
+        }
+      }
+
+      var br = document.getElementById('gwa-badges');
+      if (br) {
+        br.innerHTML = '';
+        var subjs2 = quarters[currentQuarter];
+        var filled = subjs2.filter(function (s) { return calcQuarterGrade(s, currentQuarter) !== null; }).length;
+        var s2 = document.createElement('span');
+        s2.className = 'pill pill-gray';
+        s2.textContent = subjs2.length + ' subjects · ' + filled + ' filled';
+        br.appendChild(s2);
+      }
+
+      // Update individual row badges
+      var subjs3 = quarters[currentQuarter];
+      for (var i = 0; i < subjs3.length; i++) {
+        var q2 = calcQuarterGrade(subjs3[i], currentQuarter);
+        var gbEl = document.getElementById('gb-' + i);
+        if (gbEl) {
+          if (q2 !== null) {
+            gbEl.textContent = q2.toFixed(2);
+            gbEl.className = 'g-badge ' + gradeClass(q2);
+          } else {
+            gbEl.textContent = '—';
+            gbEl.className = 'g-badge pill-gray';
+          }
+        }
+      }
+
+      // Update comparison section
+      updateGWAComparison();
+    }
+
+    function updateGWAComparison() {
+      var grid = document.getElementById('gwa-compare-grid');
+      var section = document.getElementById('gwa-compare-section');
+      if (!grid || !section) return;
+
+      var hasAny = false;
+      for (var qi = 0; qi < 4; qi++) { if (calcGWA(qi) !== null) { hasAny = true; break; } }
+      section.style.display = hasAny ? 'block' : 'none';
+      if (!hasAny) return;
+
+      grid.innerHTML = '';
+      var qLabels = ['Q1', 'Q2', 'Q3', 'Q4'];
+      var values = [];
+      for (var qi2 = 0; qi2 < 4; qi2++) {
+        var v = calcGWA(qi2);
+        values.push(v);
+        var c = document.createElement('div');
+        c.className = 'gwa-compare-card';
+        c.innerHTML = '<div class="gwa-compare-lbl">' + qLabels[qi2] + ' GWA</div>' +
+          '<div class="gwa-compare-val ' + (v !== null ? gradeClass(v) : '') + '">' + (v !== null ? v.toFixed(2) : '—') + '</div>';
+        grid.appendChild(c);
+      }
+
+      // Find highest/lowest subject across current quarter
+      var subjs = quarters[currentQuarter];
+      var bestSubj = null, bestG = Infinity, worstSubj = null, worstG2 = -Infinity;
+      for (var i = 0; i < subjs.length; i++) {
+        var sg2 = calcQuarterGrade(subjs[i], currentQuarter);
+        if (sg2 !== null) {
+          if (sg2 < bestG) { bestG = sg2; bestSubj = subjs[i]; }
+          if (sg2 > worstG2) { worstG2 = sg2; worstSubj = subjs[i]; }
+        }
+      }
+
+      // Quarter trends
+      var trends = [];
+      for (var qi3 = 1; qi3 < 4; qi3++) {
+        var prev = values[qi3 - 1], curr2 = values[qi3];
+        if (prev !== null && curr2 !== null) {
+          var diff = prev - curr2; // lower = better
+          if (Math.abs(diff) >= 0.01) trends.push(qLabels[qi3] + ': ' + (diff > 0 ? '↑ improved' : '↓ dropped') + ' by ' + Math.abs(diff).toFixed(2));
+        }
+      }
+
+      if (bestSubj || worstSubj || trends.length > 0) {
+        var extra = document.createElement('div');
+        extra.style.cssText = 'grid-column:span 2;background:var(--bg);border:.5px solid var(--sep);border-radius:var(--r2);padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.8;';
+        var lines = [];
+        if (bestSubj) lines.push('🏆 Best this quarter: <strong>' + escHtml(bestSubj.n) + '</strong> — ' + bestG.toFixed(2));
+        if (worstSubj && worstSubj !== bestSubj) lines.push('📌 Needs attention: <strong>' + escHtml(worstSubj.n) + '</strong> — ' + worstG2.toFixed(2));
+        lines = lines.concat(trends);
+        extra.innerHTML = lines.join('<br>');
+        grid.appendChild(extra);
+      }
+    }
+
+    function switchGWAQuarter(qIdx) {
+      currentQuarter = qIdx;
+      document.querySelectorAll('.gwa-qtab').forEach(function (tab) {
+        tab.classList.toggle('active', parseInt(tab.dataset.q) === qIdx);
+      });
+      var lbl = document.getElementById('gwa-quarter-label');
+      var formula = document.getElementById('gwa-formula-note');
+      var thead = document.getElementById('gwa-thead');
+      if (qIdx === 0) {
+        if (lbl) lbl.textContent = 'Q1 — final grade';
+        if (formula) formula.textContent = 'Select the final grade for each subject. Q1 has no tentative grade.';
+        if (thead) thead.innerHTML = '<tr><th>subject</th><th class="c">final grade</th><th class="c">gwa contribution</th></tr>';
+      } else {
+        if (lbl) lbl.textContent = 'Q' + (qIdx + 1) + ' — quarter grade';
+        if (formula) formula.innerHTML = 'Quarter Grade = <strong style="color:var(--pink-text);">((Tentative × 2) + Previous) ÷ 3</strong> then transmuted.';
+        if (thead) thead.innerHTML = '<tr><th>subject</th><th class="c">previous grade</th><th class="c">tentative grade</th><th class="c">quarter grade</th></tr>';
+      }
+      buildGWATable();
+      updateGWADisplay();
+    }
+
+    function buildGWATable() {
+      var tbody = document.getElementById('gwa-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      var subjs = quarters[currentQuarter];
+      var isQ1 = currentQuarter === 0;
+
+      for (var i = 0; i < subjs.length; i++) {
+        (function (s, idx) {
+          var tr = document.createElement('tr');
+
+          // Subject name
+          var tdN = document.createElement('td');
+          tdN.innerHTML =
+            '<span style="font-size:14px;font-weight:500;">' + escHtml(s.n) + '</span>' +
+            (s.w !== 1.0 ? '<span style="font-size:10px;color:var(--text3);margin-left:5px;">' + s.w + '×</span>' : '');
+          tr.appendChild(tdN);
+
+          function makeGradeSel(currentVal, onChange) {
+            var sel = document.createElement('select');
+            sel.className = 'subj-sel';
+            var def = document.createElement('option');
+            def.value = ''; def.textContent = '—';
+            sel.appendChild(def);
+            for (var k = 0; k < GRADE_OPTIONS.length; k++) {
+              var opt = document.createElement('option');
+              opt.value = GRADE_OPTIONS[k].grade;
+              opt.textContent = GRADE_OPTIONS[k].label;
+              if (currentVal !== null && Math.abs(currentVal - GRADE_OPTIONS[k].grade) < 0.001) opt.selected = true;
+              sel.appendChild(opt);
+            }
+            sel.addEventListener('change', function () {
+              onChange(sel.value === '' ? null : parseFloat(sel.value));
+              updateGWADisplay();
+              saveGWA();
+            });
+            return sel;
+          }
+
+          if (isQ1) {
+            // Q1: single final grade column
+            var tdF = document.createElement('td');
+            tdF.style.textAlign = 'center';
+            tdF.appendChild(makeGradeSel(s.f, function (v) { s.f = v; }));
+            tr.appendChild(tdF);
+          } else {
+            // Q2–Q4: previous + tentative
+            var tdP = document.createElement('td');
+            tdP.style.textAlign = 'center';
+            tdP.appendChild(makeGradeSel(s.p, function (v) { s.p = v; }));
+            tr.appendChild(tdP);
+
+            var tdT = document.createElement('td');
+            tdT.style.textAlign = 'center';
+            tdT.appendChild(makeGradeSel(s.t, function (v) { s.t = v; }));
+            tr.appendChild(tdT);
+          }
+
+          // Quarter grade badge
+          var tdG = document.createElement('td');
+          tdG.style.textAlign = 'center';
+          var badge = document.createElement('span');
+          badge.id = 'gb-' + idx;
+          badge.className = 'g-badge pill-gray';
+          badge.textContent = '—';
+          tdG.appendChild(badge);
+          tr.appendChild(tdG);
+
+          tbody.appendChild(tr);
+        })(subjs[i], i);
+      }
+
+      updateGWADisplay();
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       HOME PAGE — dashboard style
+    ══════════════════════════════════════════════════════════════ */
+    function buildHome() {
+      var hr = new Date().getHours();
+      var greeting = hr < 12 ? 'good morning' : hr < 17 ? 'good afternoon' : 'good evening';
+      var nameEl = document.getElementById('sb-username');
+      var uname = nameEl ? nameEl.textContent : 'katsu';
+      var titleEl = document.getElementById('home-greeting');
+      if (titleEl) titleEl.textContent = 'home  ·  ' + greeting + ', ' + uname + ' ';
+
+      // Stats grid
+      var stats = document.getElementById('home-stats');
+      stats.innerHTML = '';
+
+      // GWA card
+      var gwa = calcGWA(currentQuarter);
+      var gwaStr = gwa !== null ? gwa.toFixed(2) : '—';
+      var isDL = gwa !== null && gwa <= 1.50;
+      var gc = document.createElement('div');
+      gc.className = 'stat-card';
+      gc.innerHTML =
+        '<div class="stat-lbl">GWA</div>' +
+        '<div class="stat-val">' + gwaStr + '</div>' +
+        (isDL
+          ? '<div class="stat-sub"><span class="directors-badge" style="font-size:11px;padding:3px 9px;">Director\'s Lister →</span></div>'
+          : '<div class="stat-sub">' + (gwa !== null ? (gwa - 1.50).toFixed(2) + ' above DL cutoff' : 'no grades entered') + '</div>');
+      gc.addEventListener('click', function () { goPage('gwa'); });
+      stats.appendChild(gc);
+
+      // Recall sets card
+      var rc = document.createElement('div');
+      rc.className = 'stat-card';
+      var dCount = studyDecks.length;
+      var eCount = studyDecks.reduce(function (a, d) { return a + (d.items ? d.items.length : 0); }, 0);
+      rc.innerHTML =
+        '<div class="stat-lbl">Recall Sets</div>' +
+        '<div class="stat-val">' + dCount + '</div>' +
+        '<div class="stat-sub">' + eCount + ' exercises total</div>';
+      rc.addEventListener('click', function () { goPage('recall'); });
+      stats.appendChild(rc);
+
+      // Streak card
+      var today = new Date().getDay(); // 0=Sun
+      var days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+      var sc = document.createElement('div');
+      sc.className = 'stat-card';
+      var streakVal = parseInt(localStorage.getItem('study_streak') || '0');
+      var dotHtml = '';
+      for (var di = 0; di < 7; di++) {
+        var dayIdx = (di + 1) % 7;
+        var isToday = dayIdx === today;
+        var active = di < (streakVal % 7);
+        dotHtml += '<div class="streak-dot ' + (isToday ? 'today' : active ? 'active' : '') + '">' + days[di] + '</div>';
+      }
+      sc.innerHTML =
+        '<div class="stat-lbl">Study Streak</div>' +
+        '<div class="stat-val" style="display:flex;align-items:center;gap:8px;">' + streakVal + ' <span style="font-size:26px;">🔥</span></div>' +
+        '<div class="stat-streak">' + dotHtml + '</div>';
+      stats.appendChild(sc);
+
+      // Workspace notes card
+      var nc = document.createElement('div');
+      nc.className = 'stat-card';
+      var nCount = (fileTree.files || []).length;
+      var fCount = (fileTree.folders || []).length;
+      nc.innerHTML =
+        '<div class="stat-lbl">Workspace Notes</div>' +
+        '<div class="stat-val">' + nCount + '</div>' +
+        '<div class="stat-sub">' + fCount + ' folder' + (fCount !== 1 ? 's' : '') + ' · ' + (nCount === 0 ? 'click + to start' : 'files saved') + '</div>';
+      nc.addEventListener('click', function () { goPage('workspace'); });
+      stats.appendChild(nc);
+
+      // Recents
+      var recentsEl = document.getElementById('home-recents');
+      recentsEl.innerHTML = '';
+      var recents = [];
+      // Recent files
+      var sortedFiles = (fileTree.files || []).slice().sort(function (a, b) { return (b.updatedAt || 0) - (a.updatedAt || 0); });
+      sortedFiles.slice(0, 2).forEach(function (f) {
+        recents.push({ ico: '📄', icoBg: 'rgba(52,199,89,.1)', name: f.name, sub: 'workspace · edited ' + timeSince(f.updatedAt), page: 'workspace', fileId: f.id });
+      });
+      // Recent decks
+      studyDecks.slice(0, 2).forEach(function (d) {
+        recents.push({ ico: '🃏', icoBg: 'rgba(245,188,226,.35)', name: d.name, sub: 'recall set · ' + (d.items ? d.items.length : 0) + ' cards', page: 'recall', deckId: d.id });
+      });
+      // GWA entry
+      recents.push({ ico: '📊', icoBg: 'rgba(255,149,0,.1)', name: 'GWA updated', sub: 'recalculated · just now', page: 'gwa' });
+
+      if (recents.length === 0) {
+        recentsEl.innerHTML = '<div style="padding:18px 14px;font-size:13px;color:var(--text3);">nothing yet — start by creating a note or deck.</div>';
+      } else {
+        recents.slice(0, 4).forEach(function (r) {
+          var row = document.createElement('div');
+          row.className = 'home-recent-row';
+          row.innerHTML =
+            '<div class="home-recent-ico" style="background:' + r.icoBg + ';">' + r.ico + '</div>' +
+            '<div style="flex:1;min-width:0;">' +
+            '<div class="home-recent-name">' + escHtml(r.name) + '</div>' +
+            '<div class="home-recent-sub">' + escHtml(r.sub) + '</div>' +
+            '</div>' +
+            '<div class="home-recent-arr">›</div>';
+          row.addEventListener('click', function () {
+            goPage(r.page);
+            if (r.fileId) setTimeout(function () { openQuillFile(r.fileId); }, 300);
+            if (r.deckId) { currentDeckId = r.deckId; }
+          });
+          recentsEl.appendChild(row);
+        });
+      }
+
+      // Quick actions
+      var act = document.getElementById('home-actions');
+      act.innerHTML = '';
+      var actData = [
+        { icon: '<polygon points="5 3 19 12 5 21 5 3"/>', lbl: 'Start Play Mode', color: 'var(--pink-text)', bg: 'var(--pink2)', page: 'play' },
+        { icon: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', lbl: 'New Note', color: '#248A3D', bg: 'rgba(52,199,89,.1)', page: 'workspace', action: 'newfile' },
+        { icon: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>', lbl: 'New Recall Set', color: 'var(--indigo)', bg: 'rgba(88,86,214,.08)', page: 'recall' },
+        { icon: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>', lbl: 'Update Grades', color: 'var(--orange)', bg: 'rgba(255,149,0,.08)', page: 'gwa' },
+      ];
+      actData.forEach(function (a) {
+        var d = document.createElement('div');
+        d.className = 'home-action-btn';
+        d.innerHTML =
+          '<div class="home-action-ico" style="background:' + a.bg + ';">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + a.color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + a.icon + '</svg>' +
+          '</div>' +
+          '<div class="home-action-lbl">' + a.lbl + '</div>';
+        d.addEventListener('click', function () {
+          goPage(a.page);
+          if (a.action === 'newfile') setTimeout(function () { openNewFileModal(null); }, 300);
+        });
+        act.appendChild(d);
+      });
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       MODAL HELPERS (zero browser prompts)
+    ══════════════════════════════════════════════════════════════ */
+    var modalCallback = null;
+
+    function openModal(title, placeholder, cb) {
+      modalCallback = cb;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-inp').value = '';
+      document.getElementById('modal-inp').placeholder = placeholder;
+      document.getElementById('modal-overlay').classList.remove('hidden');
+      setTimeout(function () { document.getElementById('modal-inp').focus(); }, 60);
+    }
+
+    function modalClose() {
+      document.getElementById('modal-overlay').classList.add('hidden');
+      modalCallback = null;
+    }
+
+    function modalConfirm() {
+      var val = document.getElementById('modal-inp').value.trim();
+      if (!val) return;
+      var cb = modalCallback;
+      modalClose();
+      if (cb) cb(val);
+    }
+
+    function openNewFileModal(folderId) {
+      openModal('new note', 'Note title…', function (name) {
+        var id = 'f-' + Date.now();
+        var file = { id: id, folderId: folderId || null, name: name, content: '', updatedAt: Date.now() };
+        if (!fileTree.files) fileTree.files = [];
+        fileTree.files.push(file);
+        saveWorkspace();
+        buildFileTree();
+        openQuillFile(id);
+      });
+    }
+
+    function openNewFolderModal() {
+      openModal('new folder', 'Folder name…', function (name) {
+        var id = 'folder-' + Date.now();
+        if (!fileTree.folders) fileTree.folders = [];
+        fileTree.folders.push({ id: id, name: name, expanded: true });
+        saveWorkspace();
+        buildFileTree();
+      });
+    }
+
+    document.getElementById('btn-new-folder').addEventListener('click', openNewFolderModal);
+    document.getElementById('btn-new-file').addEventListener('click', function () { openNewFileModal(null); });
+
+    /* ══════════════════════════════════════════════════════════════
+       SPLIT MODE
+    ══════════════════════════════════════════════════════════════ */
+    var splitOn = false;
+    function toggleSplitMode() {
+      splitOn = !splitOn;
+      var pane = document.getElementById('ws-recall-pane');
+      var handle = document.getElementById('ws-drag-handle');
+      var btn = document.getElementById('btn-split-toggle');
+      pane.style.display = splitOn ? 'flex' : 'none';
+      handle.style.display = splitOn ? 'flex' : 'none';
+      if (btn) btn.classList.toggle('split-on', splitOn);
+      if (splitOn) buildWsRecall();
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       IMAGE HELPERS
+    ══════════════════════════════════════════════════════════════ */
+    function insertImageIntoEditor() {
+      var inp = document.createElement('input');
+      inp.type = 'file'; inp.accept = 'image/*';
+      inp.onchange = function () {
+        var file = inp.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (e) { embedImageDataUrl(e.target.result); };
+        reader.readAsDataURL(file);
+      };
+      inp.click();
+    }
+
+    function embedImageDataUrl(dataUrl) {
+      if (!quillEditor) return;
+      var range = quillEditor.getSelection(true);
+      quillEditor.insertEmbed(range ? range.index : 0, 'image', dataUrl, 'user');
+      quillEditor.setSelection((range ? range.index : 0) + 1);
+    }
+
+    /* paste images directly into editor */
+    function initPasteImage() {
+      var editorEl = document.getElementById('editor-container');
+      editorEl.addEventListener('paste', function (e) {
+        var items = e.clipboardData && e.clipboardData.items;
+        if (!items) return;
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf('image') !== -1) {
+            e.preventDefault();
+            var blob = items[i].getAsFile();
+            var reader = new FileReader();
+            reader.onload = function (ev) { embedImageDataUrl(ev.target.result); };
+            reader.readAsDataURL(blob);
+            return;
+          }
+        }
+      });
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       QUILL EDITOR
+    ══════════════════════════════════════════════════════════════ */
+    function initQuill() {
+      if (quillEditor) return;
+
+      // Register image resize blot
+      var BlockEmbed = Quill.import('blots/block/embed');
+      var ImageBlot = Quill.import('formats/image');
+
+      quillEditor = new Quill('#editor-container', {
+        theme: 'snow',
+        modules: { toolbar: false },
+        placeholder: 'Select or create a note to start writing…',
+      });
+
+      /* Custom toolbar bindings */
+      document.getElementById('ql-bold').addEventListener('click', function () {
+        var fmt = quillEditor.getFormat();
+        quillEditor.format('bold', !fmt.bold);
+      });
+      document.getElementById('ql-italic').addEventListener('click', function () {
+        var fmt = quillEditor.getFormat();
+        quillEditor.format('italic', !fmt.italic);
+      });
+      document.getElementById('ql-underline').addEventListener('click', function () {
+        var fmt = quillEditor.getFormat();
+        quillEditor.format('underline', !fmt.underline);
+      });
+      document.getElementById('ql-h1').addEventListener('click', function () {
+        var fmt = quillEditor.getFormat();
+        quillEditor.format('header', fmt.header === 1 ? false : 1);
+      });
+      document.getElementById('ql-h2').addEventListener('click', function () {
+        var fmt = quillEditor.getFormat();
+        quillEditor.format('header', fmt.header === 2 ? false : 2);
+      });
+      document.getElementById('ql-bullet').addEventListener('click', function () {
+        var fmt = quillEditor.getFormat();
+        quillEditor.format('list', fmt.list === 'bullet' ? false : 'bullet');
+      });
+      document.getElementById('ql-blockquote').addEventListener('click', function () {
+        var fmt = quillEditor.getFormat();
+        quillEditor.format('blockquote', !fmt.blockquote);
+      });
+
+      /* Image resize on click */
+      quillEditor.root.addEventListener('click', function (e) {
+        if (e.target.tagName === 'IMG') {
+          initImgResize(e.target);
+        }
+      });
+
+      /* Paste images */
+      initPasteImage();
+
+      /* Debounced save on text change */
+      quillEditor.on('text-change', function () {
+        clearTimeout(quillSaveTimer);
+        quillSaveTimer = setTimeout(function () {
+          var file = (fileTree.files || []).find(function (f) { return f.id === currentFileId; });
+          if (!file) return;
+          file.content = quillEditor.root.innerHTML;
+          file.updatedAt = Date.now();
+          var meta = document.getElementById('ws-file-meta');
+          if (meta) meta.textContent = file.name + ' · editing…';
+          saveWorkspace();
+        }, 800);
+      });
+    }
+
+    /* inline image resize */
+    var _resizingImg = null, _resizeStartX = 0, _resizeStartW = 0;
+    function initImgResize(img) {
+      // deselect previous
+      document.querySelectorAll('.img-selected').forEach(function (el) { el.classList.remove('img-selected'); el.style.outline = ''; });
+      img.style.outline = '2px solid var(--pink)';
+      img.classList.add('img-selected');
+
+      function onMouseDown(e) {
+        if (e.target !== img) { img.style.outline = ''; img.classList.remove('img-selected'); document.removeEventListener('mousedown', onMouseDown); }
+      }
+      document.addEventListener('mousedown', onMouseDown);
+
+      // drag right edge to resize
+      img.setAttribute('draggable', 'false');
+      img.onmousedown = function (e) {
+        // only resize if clicking near right edge (last 16px)
+        var rect = img.getBoundingClientRect();
+        if (e.clientX < rect.right - 16) return; // let quill handle normal drag
+        e.preventDefault();
+        _resizingImg = img;
+        _resizeStartX = e.clientX;
+        _resizeStartW = img.offsetWidth;
+        document.body.style.cursor = 'ew-resize';
+        document.body.style.userSelect = 'none';
+      };
+    }
+    document.addEventListener('mousemove', function (e) {
+      if (!_resizingImg) return;
+      var nw = Math.max(40, _resizeStartW + (e.clientX - _resizeStartX));
+      _resizingImg.style.width = nw + 'px';
+      _resizingImg.style.maxWidth = '100%';
+    });
+    document.addEventListener('mouseup', function () {
+      if (_resizingImg) {
+        // save after resize
+        clearTimeout(quillSaveTimer);
+        var file2 = (fileTree.files || []).find(function (f) { return f.id === currentFileId; });
+        if (file2 && quillEditor) { file2.content = quillEditor.root.innerHTML; saveWorkspace(); }
+        _resizingImg = null;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      }
+    });
+
+    function openQuillFile(fileId) {
+      var file = (fileTree.files || []).find(function (f) { return f.id === fileId; });
+      if (!file || !quillEditor) return;
+      currentFileId = fileId;
+
+      quillEditor.root.innerHTML = file.content || '';
+      quillEditor.enable(true);
+
+      var topbar = document.getElementById('ws-topbar-file');
+      if (topbar) topbar.textContent = file.name;
+      var meta = document.getElementById('ws-file-meta');
+      if (meta) meta.textContent = file.name + ' · ' + timeSince(file.updatedAt);
+
+      buildFileTree();
+    }
+
+    function wsShowEmpty() {
+      if (quillEditor) {
+        quillEditor.root.innerHTML = '';
+        quillEditor.disable();
+      }
+      var topbar = document.getElementById('ws-topbar-file');
+      if (topbar) topbar.textContent = 'no file open';
+      var meta = document.getElementById('ws-file-meta');
+      if (meta) meta.textContent = '—';
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       FILE TREE with HTML5 Drag & Drop
+    ══════════════════════════════════════════════════════════════ */
+    function buildFileTree() {
+      var root = document.getElementById('ws-filetree-root');
+      root.innerHTML = '';
+      var folders = fileTree.folders || [];
+      var files = fileTree.files || [];
+
+      for (var fi = 0; fi < folders.length; fi++) {
+        (function (folder) {
+          var fRow = document.createElement('div');
+          fRow.className = 'ft-row';
+          fRow.style.paddingLeft = '14px';
+
+          /* Drag-over folder highlight */
+          fRow.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            fRow.classList.add('drag-over');
+            fRow.style.background = 'rgba(245,188,226,.22)';
+          });
+          fRow.addEventListener('dragleave', function () {
+            fRow.classList.remove('drag-over');
+            fRow.style.background = '';
+          });
+          fRow.addEventListener('drop', function (e) {
+            e.preventDefault();
+            fRow.classList.remove('drag-over');
+            fRow.style.background = '';
+            var fileId = e.dataTransfer.getData('text/plain');
+            var target = (fileTree.files || []).find(function (f) { return f.id === fileId; });
+            if (target) { target.folderId = folder.id; saveWorkspace(); buildFileTree(); }
+          });
+
+          var ico = document.createElement('span');
+          ico.className = 'ft-ico';
+          ico.innerHTML = folder.expanded
+            ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>'
+            : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
+
+          var lbl = document.createElement('span');
+          lbl.className = 'ft-lbl';
+          lbl.textContent = folder.name;
+
+          var acts = document.createElement('span');
+          acts.className = 'ft-actions';
+
+          var addIn = document.createElement('button');
+          addIn.className = 'ft-act-btn';
+          addIn.title = 'New note in folder';
+          addIn.innerHTML = '+';
+          addIn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            openNewFileModal(folder.id);
+          });
+
+          var delF = document.createElement('button');
+          delF.className = 'ft-act-btn';
+          delF.title = 'Delete folder';
+          delF.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+          delF.addEventListener('click', function (e) {
+            e.stopPropagation();
+            fileTree.folders = fileTree.folders.filter(function (f) { return f.id !== folder.id; });
+            fileTree.files = fileTree.files.filter(function (f) { return f.folderId !== folder.id; });
+            if (currentFileId) {
+              var still = (fileTree.files || []).find(function (f) { return f.id === currentFileId; });
+              if (!still) { currentFileId = null; wsShowEmpty(); }
+            }
+            saveWorkspace(); buildFileTree();
+          });
+
+          acts.appendChild(addIn);
+          acts.appendChild(delF);
+          fRow.appendChild(ico);
+          fRow.appendChild(lbl);
+          fRow.appendChild(acts);
+          fRow.addEventListener('click', function () { folder.expanded = !folder.expanded; buildFileTree(); });
+          root.appendChild(fRow);
+
+          if (folder.expanded) {
+            var ff = files.filter(function (f) { return f.folderId === folder.id; });
+            for (var k = 0; k < ff.length; k++) root.appendChild(buildFileRow(ff[k], 28));
+          }
+        })(folders[fi]);
+      }
+
+      var rootFiles = files.filter(function (f) { return !f.folderId; });
+      for (var k2 = 0; k2 < rootFiles.length; k2++) root.appendChild(buildFileRow(rootFiles[k2], 14));
+
+      if (folders.length === 0 && rootFiles.length === 0) {
+        var es = document.createElement('div');
+        es.className = 'empty-state';
+        es.style.padding = '28px 12px';
+        es.innerHTML =
+          '<div class="empty-ico"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>' +
+          '<div class="empty-title" style="font-size:13px;">no notes yet</div>' +
+          '<div class="empty-sub" style="font-size:12px;">use the buttons above to create folders or notes.</div>';
+        root.appendChild(es);
+      }
+    }
+
+    function buildFileRow(file, paddingLeft) {
+      var row = document.createElement('div');
+      row.className = 'ft-row' + (file.id === currentFileId ? ' active' : '');
+      row.style.paddingLeft = paddingLeft + 'px';
+      row.draggable = true;
+
+      row.addEventListener('dragstart', function (e) {
+        e.dataTransfer.setData('text/plain', file.id);
+        e.dataTransfer.effectAllowed = 'move';
+        row.style.opacity = '.4';
+      });
+      row.addEventListener('dragend', function () { row.style.opacity = ''; });
+
+      var ico = document.createElement('span');
+      ico.className = 'ft-ico';
+      ico.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+
+      var lbl = document.createElement('span');
+      lbl.className = 'ft-lbl';
+      lbl.textContent = file.name;
+
+      var acts = document.createElement('span');
+      acts.className = 'ft-actions';
+      var delBtn = document.createElement('button');
+      delBtn.className = 'ft-act-btn';
+      delBtn.title = 'Delete note';
+      delBtn.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      delBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        fileTree.files = fileTree.files.filter(function (f) { return f.id !== file.id; });
+        if (currentFileId === file.id) { currentFileId = null; wsShowEmpty(); }
+        saveWorkspace(); buildFileTree();
+      });
+      acts.appendChild(delBtn);
+      row.appendChild(ico); row.appendChild(lbl); row.appendChild(acts);
+      row.addEventListener('click', function () { openQuillFile(file.id); });
+      return row;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       WORKSPACE RECALL SIDE PANE
+    ══════════════════════════════════════════════════════════════ */
+    function buildWsRecall() {
+      var inner = document.getElementById('ws-recall-inner');
+      inner.innerHTML = '';
+      var deck = studyDecks.find(function (d) { return d.id === currentDeckId; });
+      if (!deck || !deck.items || deck.items.length === 0) {
+        inner.innerHTML =
+          '<div class="empty-state" style="padding:24px;">' +
+          '<div class="empty-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg></div>' +
+          '<div class="empty-title" style="font-size:13px;">no exercises yet</div>' +
+          '<div class="empty-sub" style="font-size:12px;">build a deck in active recall.</div>' +
+          '</div>';
+        document.getElementById('ws-recall-sub').textContent = 'no deck selected';
+        return;
+      }
+      document.getElementById('ws-recall-sub').textContent = deck.name + ' · ' + deck.items.length + ' exercises';
+      for (var i = 0; i < deck.items.length; i++) {
+        var e = deck.items[i];
+        var card = document.createElement('div');
+        card.className = 'mini-card';
+        var html = '<div class="mini-type">' + (e.type || 'item') + '</div>';
+        if (e.type === 'flashcard') {
+          html += '<div class="mini-content">' + escHtml(e.q) + '</div>';
+        } else if (e.type === 'order') {
+          for (var k = 0; k < (e.answer || []).length; k++) {
+            html += '<div class="mini-item"><span class="mini-item-n">' + (k + 1) + '</span>' + escHtml(e.answer[k]) + '</div>';
+          }
+        } else if (e.type === 'blanks') {
+          html += '<div class="mini-content">' + escHtml(e.before) + ' ___ ' + escHtml(e.after) + '</div>';
+        } else if (e.type === 'matching') {
+          for (var k2 = 0; k2 < (e.pairs || []).length; k2++) {
+            html += '<div class="mini-pair">' + escHtml(e.pairs[k2].left) + ' — ' + escHtml(e.pairs[k2].right) + '</div>';
+          }
+        }
+        card.innerHTML = html;
+        inner.appendChild(card);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       ACTIVE RECALL — LIBRARY (with deck folders)
+    ══════════════════════════════════════════════════════════════ */
+    function buildArLibrary() {
+      var lib = document.getElementById('ar-library');
+      lib.innerHTML = '';
+
+      // Toolbar
+      var toolbar = document.createElement('div');
+      toolbar.className = 'ar-lib-toolbar';
+
+      var newDeckBtn = document.createElement('button');
+      newDeckBtn.className = 'ar-lib-btn primary';
+      newDeckBtn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> new deck';
+      newDeckBtn.addEventListener('click', function () {
+        openModal('new deck', 'Deck name…', function (name) {
+          var id = 'deck-' + Date.now();
+          studyDecks.push({ id: id, name: name, items: [], folderId: null });
+          currentDeckId = id;
+          saveDecks(); buildRecallPage(); buildWsRecall();
+        });
+      });
+
+      var newFolderBtn = document.createElement('button');
+      newFolderBtn.className = 'ar-lib-btn';
+      newFolderBtn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> folder';
+      newFolderBtn.addEventListener('click', function () {
+        openModal('new folder', 'Folder name…', function (name) {
+          deckFolders.push({ id: 'df-' + Date.now(), name: name, expanded: true });
+          saveDecks(); buildArLibrary();
+        });
+      });
+
+      toolbar.appendChild(newDeckBtn);
+      toolbar.appendChild(newFolderBtn);
+      lib.appendChild(toolbar);
+
+      if (studyDecks.length === 0 && deckFolders.length === 0) {
+        lib.innerHTML += '<div class="empty-state"><div class="empty-ico"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg></div><div class="empty-title">no decks yet</div><div class="empty-sub">click "new deck" to build your first study set, or create a folder to organize them.</div></div>';
+        return;
+      }
+
+      function renderDeckItem(deck, container) {
+        var item = document.createElement('div');
+        item.className = 'deck-folder-item' + (deck.id === currentDeckId ? ' active' : '');
+
+        var ico = document.createElement('div');
+        ico.style.cssText = 'width:26px;height:26px;border-radius:7px;background:var(--pink2);display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+        ico.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--pink-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>';
+
+        var name = document.createElement('span');
+        name.className = 'deck-item-name';
+        name.textContent = deck.name;
+
+        var cnt = document.createElement('span');
+        cnt.className = 'deck-item-count';
+        cnt.textContent = (deck.items ? deck.items.length : 0) + ' items';
+
+        var pBtn = document.createElement('button');
+        pBtn.style.cssText = 'background:var(--pink);color:var(--pink-text);border:none;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sf);flex-shrink:0;';
+        pBtn.textContent = 'play';
+        pBtn.addEventListener('click', function (e) { e.stopPropagation(); currentDeckId = deck.id; goPage('play'); });
+
+        var delBtn = document.createElement('button');
+        delBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text3);padding:2px 4px;flex-shrink:0;';
+        delBtn.innerHTML = '×';
+        delBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          studyDecks = studyDecks.filter(function (d) { return d.id !== deck.id; });
+          if (currentDeckId === deck.id) currentDeckId = studyDecks.length > 0 ? studyDecks[0].id : null;
+          saveDecks(); buildRecallPage(); buildWsRecall();
+        });
+
+        item.appendChild(ico); item.appendChild(name); item.appendChild(cnt); item.appendChild(pBtn); item.appendChild(delBtn);
+        item.addEventListener('click', function () { currentDeckId = deck.id; buildArBuilder(); buildArLibrary(); });
+        container.appendChild(item);
+      }
+
+      // Render folders
+      deckFolders.forEach(function (folder) {
+        var folderEl = document.createElement('div');
+        folderEl.className = 'card'; folderEl.style.marginBottom = '8px; overflow:visible;';
+
+        var fhdr = document.createElement('div');
+        fhdr.className = 'deck-folder-hdr';
+        var fIco = document.createElement('span');
+        fIco.style.cssText = 'font-size:14px;flex-shrink:0;';
+        fIco.textContent = folder.expanded ? '📂' : '📁';
+        var fName = document.createElement('span');
+        fName.className = 'deck-folder-name'; fName.textContent = folder.name;
+        var fDecks = studyDecks.filter(function (d) { return d.folderId === folder.id; });
+        var fCnt = document.createElement('span');
+        fCnt.className = 'deck-folder-count'; fCnt.textContent = fDecks.length + ' decks';
+        var fDel = document.createElement('button');
+        fDel.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;';
+        fDel.textContent = '×';
+        fDel.addEventListener('click', function (e) {
+          e.stopPropagation();
+          // Move decks to root
+          studyDecks.forEach(function (d) { if (d.folderId === folder.id) d.folderId = null; });
+          deckFolders = deckFolders.filter(function (f) { return f.id !== folder.id; });
+          saveDecks(); buildArLibrary();
+        });
+        fhdr.appendChild(fIco); fhdr.appendChild(fName); fhdr.appendChild(fCnt); fhdr.appendChild(fDel);
+        fhdr.addEventListener('click', function () { folder.expanded = !folder.expanded; saveDecks(); buildArLibrary(); });
+        folderEl.appendChild(fhdr);
+
+        if (folder.expanded) {
+          var body = document.createElement('div');
+          body.className = 'deck-folder-body';
+          if (fDecks.length === 0) {
+            body.innerHTML = '<div style="padding:8px 6px;font-size:12px;color:var(--text3);">no decks in this folder</div>';
+          } else {
+            fDecks.forEach(function (d) { renderDeckItem(d, body); });
+          }
+          folderEl.appendChild(body);
+        }
+        lib.appendChild(folderEl);
+      });
+
+      // Render unfoldered decks
+      var rootDecks = studyDecks.filter(function (d) { return !d.folderId; });
+      if (rootDecks.length > 0) {
+        var rootCard = document.createElement('div');
+        rootCard.className = 'card'; rootCard.style.overflow = 'hidden';
+        rootDecks.forEach(function (d) {
+          var wrap = document.createElement('div');
+          wrap.style.cssText = 'padding:4px 6px;border-bottom:.5px solid var(--sep);';
+          wrap.style.borderBottom = d === rootDecks[rootDecks.length - 1] ? 'none' : '.5px solid var(--sep)';
+          renderDeckItem(d, wrap);
+          rootCard.appendChild(wrap);
+        });
+        lib.appendChild(rootCard);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       ACTIVE RECALL — BUILDER (Gizmo-style compact cards)
+    ══════════════════════════════════════════════════════════════ */
+    function buildArBuilder() {
+      var builder = document.getElementById('ar-builder');
+      builder.innerHTML = '';
+      var deck = studyDecks.find(function (d) { return d.id === currentDeckId; });
+
+      if (!deck) {
+        builder.innerHTML =
+          '<div class="empty-state">' +
+          '<div class="empty-ico"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg></div>' +
+          '<div class="empty-title">select a deck to edit</div>' +
+          '<div class="empty-sub">choose a deck from the left, or create a new one.</div>' +
+          '</div>';
+        return;
+      }
+
+      // Header row with editable deck name + folder assignment
+      var head = document.createElement('div');
+      head.className = 'deck-builder-head';
+      var nameInp = document.createElement('input');
+      nameInp.className = 'deck-builder-title';
+      nameInp.value = deck.name;
+      nameInp.placeholder = 'Deck name…';
+      nameInp.addEventListener('input', function () { deck.name = nameInp.value; saveDecks(); buildArLibrary(); });
+
+      // Folder picker dropdown
+      if (deckFolders.length > 0) {
+        var folderSel = document.createElement('select');
+        folderSel.style.cssText = 'height:28px;border:.5px solid var(--sep2);border-radius:7px;background:var(--bg2);font-size:12px;font-family:var(--sf);color:var(--text2);outline:none;padding:0 8px;cursor:pointer;';
+        var noFolderOpt = document.createElement('option');
+        noFolderOpt.value = ''; noFolderOpt.textContent = 'No folder';
+        if (!deck.folderId) noFolderOpt.selected = true;
+        folderSel.appendChild(noFolderOpt);
+        deckFolders.forEach(function (f) {
+          var opt = document.createElement('option');
+          opt.value = f.id; opt.textContent = '📁 ' + f.name;
+          if (deck.folderId === f.id) opt.selected = true;
+          folderSel.appendChild(opt);
+        });
+        folderSel.addEventListener('change', function () {
+          deck.folderId = folderSel.value || null;
+          saveDecks(); buildArLibrary();
+        });
+        head.appendChild(nameInp);
+        head.appendChild(folderSel);
+      } else {
+        head.appendChild(nameInp);
+      }
+      builder.appendChild(head);
+
+      // Play strip
+      var playStrip = document.createElement('div');
+      playStrip.className = 'deck-play-strip';
+      playStrip.innerHTML =
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink-text)"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
+        '<span class="deck-play-strip-lbl">Play · shuffle</span>' +
+        '<span class="deck-play-strip-count">' + (deck.items ? deck.items.length : 0) + ' exercises</span>';
+      playStrip.addEventListener('click', function () { currentDeckId = deck.id; goPage('play'); });
+      builder.appendChild(playStrip);
+
+      // Cards
+      if (!deck.items) deck.items = [];
+      deck.items.forEach(function (item) {
+        builder.appendChild(buildGizmoCard(item, deck));
+      });
+
+      // Add exercise buttons
+      var addLabel = document.createElement('div');
+      addLabel.style.cssText = 'font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:10px 0 6px;';
+      addLabel.textContent = 'add exercise';
+      builder.appendChild(addLabel);
+
+      var addRow = document.createElement('div');
+      addRow.className = 'gizmo-add-type';
+
+      var types = [
+        { type: 'flashcard', ico: '🃏', label: 'Flashcard' },
+        { type: 'blanks', ico: '📝', label: 'Fill Blank' },
+        { type: 'matching', ico: '🔗', label: 'Matching' },
+        { type: 'order', ico: '📋', label: 'Order' },
+      ];
+      types.forEach(function (m) {
+        var btn = document.createElement('button');
+        btn.className = 'gizmo-type-btn';
+        btn.innerHTML = m.ico + ' ' + m.label;
+        btn.addEventListener('click', function () {
+          deck.items.push(createBlankItem(m.type));
+          saveDecks(); buildArBuilder(); buildWsRecall();
+          // scroll to bottom
+          setTimeout(function () { builder.scrollTop = builder.scrollHeight; }, 50);
+        });
+        addRow.appendChild(btn);
+      });
+      builder.appendChild(addRow);
+    }
+
+    function buildGizmoCard(card, deck) {
+      var TYPE_COLORS = {
+        flashcard: { bg: 'rgba(245,188,226,.2)', color: 'var(--pink-text)', label: 'FLASHCARD' },
+        blanks: { bg: 'rgba(88,86,214,.08)', color: 'var(--indigo)', label: 'FILL BLANK' },
+        matching: { bg: 'rgba(255,149,0,.08)', color: 'var(--orange)', label: 'MATCHING' },
+        order: { bg: 'rgba(52,199,89,.08)', color: '#248A3D', label: 'ORDER' },
+      };
+      var tc = TYPE_COLORS[card.type] || { bg: 'var(--bg3)', color: 'var(--text2)', label: card.type };
+
+      var container = document.createElement('div');
+      container.className = 'gizmo-card';
+
+      var hdr = document.createElement('div');
+      hdr.className = 'gizmo-card-hdr';
+      var badge = document.createElement('span');
+      badge.className = 'gizmo-type-badge';
+      badge.style.cssText = 'background:' + tc.bg + ';color:' + tc.color + ';';
+      badge.textContent = tc.label;
+      var spacer = document.createElement('span'); spacer.style.flex = '1';
+      var delBtn = document.createElement('button');
+      delBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;font-weight:500;font-family:var(--sf);padding:2px 6px;border-radius:5px;';
+      delBtn.textContent = 'remove';
+      delBtn.addEventListener('click', function () {
+        deck.items = deck.items.filter(function (i) { return i.id !== card.id; });
+        saveDecks(); buildArBuilder(); buildWsRecall();
+      });
+      hdr.appendChild(badge); hdr.appendChild(spacer); hdr.appendChild(delBtn);
+      container.appendChild(hdr);
+
+      var body = document.createElement('div');
+      body.className = 'gizmo-card-body';
+
+      function gField(label, placeholder, val, onInput, opts) {
+        var wrap = document.createElement('div');
+        wrap.className = 'gizmo-field';
+        var lbl = document.createElement('div');
+        lbl.className = 'gizmo-field-lbl'; lbl.textContent = label;
+        var inp = document.createElement('input');
+        inp.className = 'gizmo-inp'; inp.placeholder = placeholder; inp.value = val || '';
+        if (opts && opts.style) inp.style.cssText = opts.style;
+        inp.addEventListener('input', function () { onInput(inp.value); saveDecks(); });
+        wrap.appendChild(lbl); wrap.appendChild(inp);
+        return { wrap: wrap, inp: inp };
+      }
+
+      if (card.type === 'flashcard') {
+        var qf = gField('QUESTION', 'Type the question…', card.q, function (v) { card.q = v; });
+        var af = gField('ANSWER', 'Type the answer…', card.a, function (v) { card.a = v; });
+        body.appendChild(qf.wrap); body.appendChild(af.wrap);
+
+      } else if (card.type === 'blanks') {
+        var row = document.createElement('div'); row.className = 'gizmo-row';
+        var bf = gField('BEFORE BLANK', 'e.g. The capital of France is', card.before, function (v) { card.before = v; });
+        var anf = gField('ANSWER', 'e.g. Paris', card.answer, function (v) { card.answer = v; });
+        row.appendChild(bf.wrap); row.appendChild(anf.wrap);
+        var af2 = gField('AFTER BLANK (optional)', 'e.g. , in Europe.', card.after, function (v) { card.after = v; });
+        body.appendChild(row); body.appendChild(af2.wrap);
+
+      } else if (card.type === 'matching') {
+        if (!card.pairs) card.pairs = [{ left: '', right: '' }];
+        var pairLbl = document.createElement('div');
+        pairLbl.className = 'gizmo-field-lbl'; pairLbl.textContent = 'PAIRS (left — right)';
+        body.appendChild(pairLbl);
+        var pairsWrap = document.createElement('div');
+
+        function renderPairs() {
+          pairsWrap.innerHTML = '';
+          card.pairs.forEach(function (pair, idx) {
+            var row2 = document.createElement('div');
+            row2.className = 'gizmo-row'; row2.style.alignItems = 'center';
+            var lInp = document.createElement('input');
+            lInp.className = 'gizmo-inp'; lInp.style.flex = '1'; lInp.placeholder = 'Left…'; lInp.value = pair.left || '';
+            lInp.addEventListener('input', function () { pair.left = lInp.value; saveDecks(); });
+            var arr = document.createElement('span');
+            arr.style.cssText = 'color:var(--pink-text);font-weight:700;flex-shrink:0;font-size:14px;';
+            arr.textContent = '—';
+            var rInp = document.createElement('input');
+            rInp.className = 'gizmo-inp'; rInp.style.flex = '1'; rInp.placeholder = 'Right…'; rInp.value = pair.right || '';
+            rInp.addEventListener('input', function () { pair.right = rInp.value; saveDecks(); });
+            var del2 = document.createElement('button');
+            del2.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;flex-shrink:0;';
+            del2.textContent = '×';
+            del2.addEventListener('click', function () { card.pairs.splice(idx, 1); saveDecks(); renderPairs(); });
+            row2.appendChild(lInp); row2.appendChild(arr); row2.appendChild(rInp); row2.appendChild(del2);
+            pairsWrap.appendChild(row2);
+          });
+        }
+        renderPairs();
+        body.appendChild(pairsWrap);
+        var addPair = document.createElement('button');
+        addPair.style.cssText = 'background:var(--pink3);border:1px dashed var(--pink);color:var(--pink-text);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;width:100%;font-family:var(--sf);margin-top:4px;';
+        addPair.textContent = '+ Add Pair';
+        addPair.addEventListener('click', function () { card.pairs.push({ left: '', right: '' }); saveDecks(); renderPairs(); });
+        body.appendChild(addPair);
+
+      } else if (card.type === 'order') {
+        if (!card.answer) card.answer = [''];
+        var evtLbl = document.createElement('div');
+        evtLbl.className = 'gizmo-field-lbl'; evtLbl.textContent = 'EVENTS (correct order)';
+        body.appendChild(evtLbl);
+        var itemsWrap = document.createElement('div');
+
+        function renderOrderItems() {
+          itemsWrap.innerHTML = '';
+          card.answer.forEach(function (evt, idx) {
+            var row3 = document.createElement('div');
+            row3.className = 'gizmo-row'; row3.style.alignItems = 'center';
+            var num = document.createElement('span');
+            num.style.cssText = 'width:18px;font-size:11px;font-weight:700;color:var(--text3);flex-shrink:0;text-align:center;';
+            num.textContent = (idx + 1) + '.';
+            var inp2 = document.createElement('input');
+            inp2.className = 'gizmo-inp'; inp2.style.flex = '1'; inp2.placeholder = 'Event ' + (idx + 1) + '…'; inp2.value = evt || '';
+            inp2.addEventListener('input', function () { card.answer[idx] = inp2.value; saveDecks(); });
+            var del3 = document.createElement('button');
+            del3.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;flex-shrink:0;';
+            del3.textContent = '×';
+            del3.addEventListener('click', function () { card.answer.splice(idx, 1); saveDecks(); renderOrderItems(); });
+            row3.appendChild(num); row3.appendChild(inp2); row3.appendChild(del3);
+            itemsWrap.appendChild(row3);
+          });
+        }
+        renderOrderItems();
+        body.appendChild(itemsWrap);
+        var addEvt = document.createElement('button');
+        addEvt.style.cssText = 'background:var(--pink3);border:1px dashed var(--pink);color:var(--pink-text);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;width:100%;font-family:var(--sf);margin-top:4px;';
+        addEvt.textContent = '+ Add Event';
+        addEvt.addEventListener('click', function () { card.answer.push(''); saveDecks(); renderOrderItems(); });
+        body.appendChild(addEvt);
+      }
+
+      container.appendChild(body);
+      return container;
+    }
+
+    function createBlankItem(type) {
+      var id = 'item-' + Date.now() + '-' + Math.floor(Math.random() * 9999);
+      if (type === 'flashcard') return { id: id, type: 'flashcard', q: '', a: '' };
+      if (type === 'blanks') return { id: id, type: 'blanks', before: '', answer: '', after: '' };
+      if (type === 'matching') return { id: id, type: 'matching', pairs: [{ left: '', right: '' }] };
+      if (type === 'order') return { id: id, type: 'order', answer: [''] };
+      return { id: id, type: type };
+    }
+
+    function buildDeckCard(card, deck) {
+      var container = document.createElement('div');
+      container.className = 'ex-card';
+
+      var hdr = document.createElement('div');
+      hdr.className = 'ex-card-header';
+      var typeLbl = document.createElement('div');
+      typeLbl.className = 'ex-type'; typeLbl.textContent = card.type;
+      var delBtn = document.createElement('button');
+      delBtn.className = 'ex-delete'; delBtn.textContent = 'remove';
+      delBtn.addEventListener('click', function () {
+        deck.items = deck.items.filter(function (i) { return i.id !== card.id; });
+        saveDecks(); buildArBuilder(); buildWsRecall();
+      });
+      hdr.appendChild(typeLbl); hdr.appendChild(delBtn); container.appendChild(hdr);
+
+      function makeLabel(text) {
+        var el = document.createElement('div');
+        el.className = 'ex-inp-label'; el.textContent = text;
+        return el;
+      }
+      function makeInput(placeholder, val, onInput) {
+        var el = document.createElement('input');
+        el.className = 'ex-inp'; el.placeholder = placeholder; el.value = val || '';
+        el.addEventListener('input', onInput);
+        return el;
+      }
+
+      if (card.type === 'flashcard') {
+        container.appendChild(makeLabel('question'));
+        var qInp = makeInput('Type the question…', card.q, function () { card.q = qInp.value; saveDecks(); });
+        qInp.style.marginBottom = '8px'; container.appendChild(qInp);
+        container.appendChild(makeLabel('answer'));
+        var aInp = makeInput('Type the answer…', card.a, function () { card.a = aInp.value; saveDecks(); });
+        container.appendChild(aInp);
+
+      } else if (card.type === 'blanks') {
+        container.appendChild(makeLabel('text before blank'));
+        var bInp = makeInput('e.g. The capital of France is', card.before, function () { card.before = bInp.value; saveDecks(); });
+        bInp.style.marginBottom = '8px'; container.appendChild(bInp);
+        container.appendChild(makeLabel('correct answer'));
+        var ansInp = makeInput('e.g. Paris', card.answer, function () { card.answer = ansInp.value; saveDecks(); });
+        ansInp.style.marginBottom = '8px'; container.appendChild(ansInp);
+        container.appendChild(makeLabel('text after blank (optional)'));
+        var afInp = makeInput('e.g. , which is in Europe.', card.after, function () { card.after = afInp.value; saveDecks(); });
+        container.appendChild(afInp);
+
+      } else if (card.type === 'matching') {
+        if (!card.pairs) card.pairs = [{ left: '', right: '' }];
+        container.appendChild(makeLabel('matching pairs'));
+        var pairsWrap = document.createElement('div');
+        container.appendChild(pairsWrap);
+
+        function renderPairs() {
+          pairsWrap.innerHTML = '';
+          for (var pi = 0; pi < card.pairs.length; pi++) {
+            (function (pair, idx) {
+              var row = document.createElement('div');
+              row.style.cssText = 'display:flex;gap:8px;margin-bottom:6px;align-items:center;';
+              var lInp = document.createElement('input');
+              lInp.className = 'ex-inp'; lInp.style.flex = '1';
+              lInp.placeholder = 'Left term…'; lInp.value = pair.left || '';
+              lInp.addEventListener('input', function () { pair.left = lInp.value; saveDecks(); });
+              var arr = document.createElement('span');
+              arr.textContent = '—'; arr.style.cssText = 'color:var(--pink-text);font-weight:700;flex-shrink:0;';
+              var rInp = document.createElement('input');
+              rInp.className = 'ex-inp'; rInp.style.flex = '1';
+              rInp.placeholder = 'Right term…'; rInp.value = pair.right || '';
+              rInp.addEventListener('input', function () { pair.right = rInp.value; saveDecks(); });
+              var del = document.createElement('button');
+              del.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text3);font-size:15px;flex-shrink:0;';
+              del.textContent = '×';
+              del.addEventListener('click', function () { card.pairs.splice(idx, 1); saveDecks(); renderPairs(); });
+              row.appendChild(lInp); row.appendChild(arr); row.appendChild(rInp); row.appendChild(del);
+              pairsWrap.appendChild(row);
+            })(card.pairs[pi], pi);
+          }
+        }
+        renderPairs();
+        var addPair = document.createElement('button');
+        addPair.style.cssText = 'margin-top:6px;background:var(--pink3);border:1px dashed var(--pink);color:var(--pink-text);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;width:100%;font-family:var(--sf);';
+        addPair.textContent = '+ Add Pair';
+        addPair.addEventListener('click', function () { card.pairs.push({ left: '', right: '' }); saveDecks(); renderPairs(); });
+        container.appendChild(addPair);
+
+      } else if (card.type === 'order') {
+        if (!card.answer) card.answer = [''];
+        container.appendChild(makeLabel('events in correct order'));
+        var itemsWrap = document.createElement('div');
+        container.appendChild(itemsWrap);
+
+        function renderOrderItems() {
+          itemsWrap.innerHTML = '';
+          for (var oi = 0; oi < card.answer.length; oi++) {
+            (function (idx) {
+              var row = document.createElement('div');
+              row.style.cssText = 'display:flex;gap:8px;margin-bottom:6px;align-items:center;';
+              var num = document.createElement('span');
+              num.style.cssText = 'width:20px;font-size:12px;font-weight:700;color:var(--text3);text-align:center;flex-shrink:0;';
+              num.textContent = (idx + 1) + '.';
+              var inp = document.createElement('input');
+              inp.className = 'ex-inp'; inp.style.flex = '1';
+              inp.placeholder = 'Event ' + (idx + 1) + '…'; inp.value = card.answer[idx] || '';
+              inp.addEventListener('input', function () { card.answer[idx] = inp.value; saveDecks(); });
+              var del2 = document.createElement('button');
+              del2.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text3);font-size:15px;flex-shrink:0;';
+              del2.textContent = '×';
+              del2.addEventListener('click', function () { card.answer.splice(idx, 1); saveDecks(); renderOrderItems(); });
+              row.appendChild(num); row.appendChild(inp); row.appendChild(del2);
+              itemsWrap.appendChild(row);
+            })(oi);
+          }
+        }
+        renderOrderItems();
+        var addItem = document.createElement('button');
+        addItem.style.cssText = 'margin-top:6px;background:var(--pink3);border:1px dashed var(--pink);color:var(--pink-text);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;width:100%;font-family:var(--sf);';
+        addItem.textContent = '+ Add Event';
+        addItem.addEventListener('click', function () { card.answer.push(''); saveDecks(); renderOrderItems(); });
+        container.appendChild(addItem);
+      }
+
+      return container;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       PLAY MODE — Fisher-Yates shuffle + full quiz engine
+    ══════════════════════════════════════════════════════════════ */
+    function fisherYatesShuffle(arr) {
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+      }
+      return a;
+    }
+
+    function buildPlayMode() {
+      var left = document.getElementById('play-left');
+      var right = document.getElementById('play-right');
+      if (!left || !right) return;
+      left.innerHTML = ''; right.innerHTML = '';
+      playRight = 0; playWrong = 0; updatePlayCounters();
+
+      var deck = studyDecks.find(function (d) { return d.id === currentDeckId; });
+      var sub = document.getElementById('play-title-sub');
+      if (sub) sub.textContent = deck ? '· ' + deck.name : '· active recall';
+
+      if (!deck || !deck.items || deck.items.length === 0) {
+        left.innerHTML =
+          '<div class="empty-state">' +
+          '<div class="empty-ico"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>' +
+          '<div class="empty-title">no exercises in this deck</div>' +
+          '<div class="empty-sub">go to active recall and add exercises to this deck.</div>' +
+          '</div>';
+        return;
+      }
+
+      var shuffled = fisherYatesShuffle(deck.items);
+
+      /* Summary card (right panel) */
+      var sumCard = document.createElement('div');
+      sumCard.className = 'card'; sumCard.style.padding = '18px';
+      sumCard.innerHTML =
+        '<div class="stat-lbl" style="margin-bottom:10px;">session stats</div>' +
+        '<div style="display:flex;gap:16px;margin-bottom:14px;">' +
+        '<div><div class="stat-lbl">correct</div><div style="font-size:26px;font-weight:700;color:var(--green);" id="sum-right">0</div></div>' +
+        '<div><div class="stat-lbl">wrong</div><div style="font-size:26px;font-weight:700;color:var(--red);" id="sum-wrong">0</div></div>' +
+        '<div><div class="stat-lbl">accuracy</div><div style="font-size:26px;font-weight:700;color:var(--pink-text);" id="sum-pct">0%</div></div>' +
+        '</div>' +
+        '<div style="height:4px;background:var(--sep);border-radius:2px;overflow:hidden;">' +
+        '<div id="sum-bar" style="height:100%;background:var(--pink);width:0%;transition:width .4s;border-radius:2px;"></div>' +
+        '</div>' +
+        '<div style="margin-top:16px;font-size:12px;color:var(--text3);">' + shuffled.length + ' exercises shuffled</div>';
+      right.appendChild(sumCard);
+
+      /* Render each exercise card */
+      for (var i = 0; i < shuffled.length; i++) {
+        left.appendChild(buildPlayCard(shuffled[i]));
+      }
+    }
+
+    function buildPlayCard(item) {
+      var section = document.createElement('div');
+
+      if (item.type === 'flashcard') {
+        var outer = document.createElement('div');
+        outer.className = 'flash-card';
+        var inner = document.createElement('div');
+        inner.className = 'flash-inner';
+        var front = document.createElement('div');
+        front.className = 'flash-face';
+        front.innerHTML = '<div class="flash-q">' + escHtml(item.q || 'No question') + '</div><div class="flash-hint">tap to flip</div>';
+        var back = document.createElement('div');
+        back.className = 'flash-face flash-back';
+        back.innerHTML = '<div class="flash-a">' + escHtml(item.a || 'No answer') + '</div>';
+        inner.appendChild(front); inner.appendChild(back); outer.appendChild(inner);
+        outer.addEventListener('click', function () { inner.classList.toggle('flipped'); });
+        section.appendChild(outer);
+
+        var btns = document.createElement('div');
+        btns.className = 'score-btns';
+        var gotIt = document.createElement('button');
+        gotIt.className = 'score-btn';
+        gotIt.style.cssText = 'background:rgba(52,199,89,.15);color:#248A3D;';
+        gotIt.textContent = 'got it';
+        gotIt.addEventListener('click', function () { playRight++; updatePlayCounters(); gotIt.style.opacity = '.4'; missed.style.opacity = '.4'; gotIt.disabled = true; missed.disabled = true; });
+        var missed = document.createElement('button');
+        missed.className = 'score-btn';
+        missed.style.cssText = 'background:rgba(255,59,48,.1);color:var(--red);';
+        missed.textContent = 'missed';
+        missed.addEventListener('click', function () { playWrong++; updatePlayCounters(); gotIt.style.opacity = '.4'; missed.style.opacity = '.4'; gotIt.disabled = true; missed.disabled = true; });
+        btns.appendChild(gotIt); btns.appendChild(missed); section.appendChild(btns);
+
+      } else if (item.type === 'blanks') {
+        var card = document.createElement('div');
+        card.className = 'ex-card';
+        card.innerHTML = '<div class="ex-type">fill in the blank</div>';
+        var sentence = document.createElement('div');
+        sentence.className = 'blanks-sentence';
+
+        if (item.before) {
+          var bSpan = document.createElement('span');
+          bSpan.textContent = item.before;
+          sentence.appendChild(bSpan);
+        }
+        var binput = document.createElement('input');
+        binput.className = 'blank-input';
+        binput.placeholder = '…';
+        sentence.appendChild(binput);
+        if (item.after) {
+          var aSpan = document.createElement('span');
+          aSpan.textContent = item.after;
+          sentence.appendChild(aSpan);
+        }
+        card.appendChild(sentence);
+
+        var reveal = document.createElement('span');
+        reveal.className = 'blank-answer-reveal';
+        reveal.style.display = 'none';
+        card.appendChild(reveal);
+
+        var checkB = document.createElement('button');
+        checkB.className = 'score-btn';
+        checkB.style.cssText = 'background:var(--pink2);color:var(--pink-text);width:100%;height:34px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--sf);';
+        checkB.textContent = 'check';
+        checkB.addEventListener('click', function () {
+          var userVal = binput.value.trim().toLowerCase();
+          var correct = (item.answer || '').trim().toLowerCase();
+          if (userVal === correct) {
+            binput.classList.add('correct'); playRight++;
+            reveal.textContent = 'correct!'; reveal.style.display = 'block'; reveal.style.color = 'var(--green)';
+          } else {
+            binput.classList.add('wrong'); playWrong++;
+            reveal.textContent = 'answer: ' + (item.answer || '');
+            reveal.style.display = 'block'; reveal.style.color = 'var(--red)';
+          }
+          updatePlayCounters(); checkB.disabled = true; checkB.style.opacity = '.5';
+        });
+        card.appendChild(checkB);
+        section.appendChild(card);
+
+      } else if (item.type === 'matching') {
+        var card2 = document.createElement('div');
+        card2.className = 'ex-card';
+        card2.innerHTML = '<div class="ex-type">matching</div>';
+        var pairs = (item.pairs || []).filter(function (p) { return p.left && p.right; });
+
+        var leftShuffled = fisherYatesShuffle(pairs.map(function (p) { return p.left; }));
+        var rightShuffled = fisherYatesShuffle(pairs.map(function (p) { return p.right; }));
+        var matchLookup = {};
+        for (var pi = 0; pi < pairs.length; pi++) matchLookup[pairs[pi].left] = pairs[pi].right;
+
+        var grid = document.createElement('div');
+        grid.className = 'match-grid';
+        var leftCol = document.createElement('div'); leftCol.className = 'match-col';
+        var rightCol = document.createElement('div'); rightCol.className = 'match-col';
+
+        var selectedLeft = null;
+        var selectedRight = null;
+
+        function tryMatch() {
+          if (!selectedLeft || !selectedRight) return;
+          var lEl = selectedLeft, rEl = selectedRight;
+          var lVal = lEl.dataset.val, rVal = rEl.dataset.val;
+          selectedLeft = null; selectedRight = null;
+
+          if (matchLookup[lVal] === rVal) {
+            lEl.classList.remove('selected'); rEl.classList.remove('selected');
+            lEl.classList.add('matched-ok'); rEl.classList.add('matched-ok');
+            playRight++; updatePlayCounters();
+          } else {
+            lEl.classList.add('flash-wrong'); rEl.classList.add('flash-wrong');
+            setTimeout(function () {
+              lEl.classList.remove('selected', 'flash-wrong');
+              rEl.classList.remove('selected', 'flash-wrong');
+            }, 600);
+            playWrong++; updatePlayCounters();
+          }
+        }
+
+        for (var li = 0; li < leftShuffled.length; li++) {
+          (function (val) {
+            var mc = document.createElement('div');
+            mc.className = 'match-card'; mc.textContent = val; mc.dataset.val = val;
+            mc.addEventListener('click', function () {
+              if (mc.classList.contains('matched-ok')) return;
+              document.querySelectorAll('.match-col:first-child .match-card.selected').forEach(function (el) { el.classList.remove('selected'); });
+              mc.classList.add('selected');
+              selectedLeft = mc; tryMatch();
+            });
+            leftCol.appendChild(mc);
+          })(leftShuffled[li]);
+        }
+        for (var ri = 0; ri < rightShuffled.length; ri++) {
+          (function (val) {
+            var mc2 = document.createElement('div');
+            mc2.className = 'match-card'; mc2.textContent = val; mc2.dataset.val = val;
+            mc2.addEventListener('click', function () {
+              if (mc2.classList.contains('matched-ok')) return;
+              document.querySelectorAll('.match-col:last-child .match-card.selected').forEach(function (el) { el.classList.remove('selected'); });
+              mc2.classList.add('selected');
+              selectedRight = mc2; tryMatch();
+            });
+            rightCol.appendChild(mc2);
+          })(rightShuffled[ri]);
+        }
+
+        grid.appendChild(leftCol); grid.appendChild(rightCol); card2.appendChild(grid);
+        section.appendChild(card2);
+
+      } else if (item.type === 'order') {
+        var card3 = document.createElement('div');
+        card3.className = 'ex-card';
+        card3.innerHTML = '<div class="ex-type">order the events</div>';
+        var correctOrder = (item.answer || []).filter(Boolean);
+        var shuffledItems = fisherYatesShuffle(correctOrder);
+
+        var list = document.createElement('div');
+        list.className = 'order-list';
+
+        function renderOrderList() {
+          list.innerHTML = '';
+          for (var oi = 0; oi < shuffledItems.length; oi++) {
+            (function (idx) {
+              var row = document.createElement('div');
+              row.className = 'order-item';
+              var rank = document.createElement('span');
+              rank.className = 'order-rank'; rank.textContent = idx + 1;
+              var text = document.createElement('span');
+              text.className = 'order-text'; text.textContent = shuffledItems[idx];
+              var arrows = document.createElement('span');
+              arrows.className = 'order-arrows';
+              var upBtn = document.createElement('button');
+              upBtn.className = 'order-arrow'; upBtn.textContent = '↑';
+              upBtn.addEventListener('click', function () {
+                if (idx === 0) return;
+                var tmp = shuffledItems[idx]; shuffledItems[idx] = shuffledItems[idx - 1]; shuffledItems[idx - 1] = tmp;
+                renderOrderList();
+              });
+              var downBtn = document.createElement('button');
+              downBtn.className = 'order-arrow'; downBtn.textContent = '↓';
+              downBtn.addEventListener('click', function () {
+                if (idx === shuffledItems.length - 1) return;
+                var tmp2 = shuffledItems[idx + 1]; shuffledItems[idx + 1] = shuffledItems[idx]; shuffledItems[idx] = tmp2;
+                renderOrderList();
+              });
+              arrows.appendChild(upBtn); arrows.appendChild(downBtn);
+              row.appendChild(rank); row.appendChild(text); row.appendChild(arrows);
+              list.appendChild(row);
+            })(oi);
+          }
+        }
+        renderOrderList();
+        card3.appendChild(list);
+
+        var checkOrd = document.createElement('button');
+        checkOrd.className = 'score-btn';
+        checkOrd.style.cssText = 'background:var(--pink2);color:var(--pink-text);width:100%;height:34px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--sf);margin-top:4px;';
+        checkOrd.textContent = 'check order';
+        checkOrd.addEventListener('click', function () {
+          var rows2 = list.querySelectorAll('.order-item');
+          var allOk = true;
+          for (var oi2 = 0; oi2 < shuffledItems.length; oi2++) {
+            var ok = shuffledItems[oi2] === correctOrder[oi2];
+            rows2[oi2].classList.remove('correct', 'incorrect');
+            rows2[oi2].classList.add(ok ? 'correct' : 'incorrect');
+            if (!ok) allOk = false;
+          }
+          if (allOk) playRight++; else playWrong++;
+          updatePlayCounters();
+        });
+        card3.appendChild(checkOrd);
+        section.appendChild(card3);
+      }
+
+      return section;
+    }
+
+    function updatePlayCounters() {
+      var r = document.getElementById('play-right-count');
+      var w = document.getElementById('play-wrong-count');
+      if (r) r.textContent = playRight + ' right';
+      if (w) w.textContent = playWrong + ' wrong';
+      var total = playRight + playWrong;
+      var pct = total === 0 ? 0 : Math.round((playRight / total) * 100);
+      var prog = document.getElementById('play-progress');
+      if (prog) prog.style.width = pct + '%';
+      var sr = document.getElementById('sum-right'); if (sr) sr.textContent = playRight;
+      var sw = document.getElementById('sum-wrong'); if (sw) sw.textContent = playWrong;
+      var sp = document.getElementById('sum-pct'); if (sp) sp.textContent = pct + '%';
+      var sb2 = document.getElementById('sum-bar'); if (sb2) sb2.style.width = pct + '%';
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       NAVIGATION — cross-fade
+    ══════════════════════════════════════════════════════════════ */
+    var PAGES = ['home', 'gwa', 'workspace', 'recall', 'play'];
+
+    function goPage(name) {
+      for (var i = 0; i < PAGES.length; i++) {
+        var id = PAGES[i];
+        var pg = document.getElementById('page-' + id);
+        var nb = document.querySelector('[data-page="' + id + '"]');
+        if (pg) pg.classList.toggle('active', id === name);
+        if (nb) nb.classList.toggle('active', id === name);
+      }
+      if (name === 'home') buildHome();
+      if (name === 'gwa') { buildGWATable(); updateGWADisplay(); }
+      if (name === 'workspace') { if (!quillInited) { initDragDivider(); initQuill(); quillInited = true; } buildFileTree(); buildWsRecall(); if (currentFileId) openQuillFile(currentFileId); }
+      if (name === 'recall') buildRecallPage();
+      if (name === 'play') buildPlayMode();
+      closeMobSb();
+    }
+
+    function buildRecallPage() {
+      buildArLibrary();
+      buildArBuilder();
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       SIDEBAR TOGGLE
+    ══════════════════════════════════════════════════════════════ */
+    function toggleSb() {
+      var s = document.getElementById('sb');
+      if (window.innerWidth <= 700) {
+        s.classList.toggle('mob-open');
+        document.getElementById('sb-overlay').classList.toggle('open', s.classList.contains('mob-open'));
+      } else {
+        s.classList.toggle('col');
+      }
+    }
+
+    function closeMobSb() {
+      document.getElementById('sb').classList.remove('mob-open');
+      document.getElementById('sb-overlay').classList.remove('open');
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       DRAG DIVIDER (recall panel resize)
+    ══════════════════════════════════════════════════════════════ */
+    function initDragDivider() {
+      var handle = document.getElementById('ws-drag-handle');
+      var pane = document.getElementById('ws-recall-pane');
+      if (!handle || !pane) return;
+      var dragging = false, startX = 0, startW = 0;
+      handle.addEventListener('mousedown', function (e) {
+        dragging = true; startX = e.clientX; startW = pane.offsetWidth;
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+      });
+      document.addEventListener('mousemove', function (e) {
+        if (!dragging) return;
+        var nw = Math.max(220, Math.min(520, startW + (startX - e.clientX)));
+        pane.style.width = nw + 'px'; pane.style.minWidth = nw + 'px';
+      });
+      document.addEventListener('mouseup', function () {
+        dragging = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      });
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       HELPERS
+    ══════════════════════════════════════════════════════════════ */
+    function escHtml(s) {
+      if (!s) return '';
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function timeSince(ts) {
+      if (!ts) return 'some time ago';
+      var diff = Date.now() - ts;
+      if (diff < 60000) return 'just now';
+      if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+      if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+      return Math.floor(diff / 86400000) + 'd ago';
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       INIT
+    ══════════════════════════════════════════════════════════════ */
+    var quillInited = false;
+    var appBooted = false;
+
+    function initApp() {
+      buildGWATable();
+      buildHome();
+      buildFileTree();
+      buildWsRecall();
+      buildRecallPage();
+      buildPlayMode();
+      if (!quillInited) {
+        initDragDivider();
+        initQuill();
+        quillInited = true;
+      }
+      if (currentFileId) openQuillFile(currentFileId);
+      else wsShowEmpty();
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       BOOTSTRAP — persistent login via Firebase onAuthStateChanged
+    ══════════════════════════════════════════════════════════════ */
+    function bootWithFirebase() {
+      fb.fns.onAuthStateChanged(fb.auth, async function (user) {
+        if (user && !appBooted) {
+          // Logged in (on load or after sign-in / sign-up)
+          currentUser = user;
+          document.getElementById('auth-overlay').classList.add('hidden');
+          document.getElementById('sb-email').textContent = currentUser.email || '';
+          var savedName = null;
+          try { savedName = localStorage.getItem('display_name_' + currentUser.uid); } catch (e) { }
+          document.getElementById('sb-username').textContent = savedName || (currentUser.email || '').split('@')[0] || 'katsu';
+          await hydrateAll();
+          appBooted = true;
+          initApp();
+        } else if (!user) {
+          // Signed out
+          currentUser = null;
+          appBooted = false;
+          document.getElementById('auth-overlay').classList.remove('hidden');
+        }
+      });
+    }
+
+    // Firebase SDK loads via ES module — wait for it to signal ready
+    if (window._fbReady) {
+      bootWithFirebase();
+    } else {
+      document.addEventListener('firebase-ready', bootWithFirebase);
+    }
+  </script>
+</body>
+
+</html>

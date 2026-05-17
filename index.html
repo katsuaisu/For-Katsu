@@ -433,34 +433,36 @@
     }
 
     .nav-btn.active {
-      background: var(--pink3);
+      background: transparent;
     }
 
     .nav-btn.active::before {
       content: '';
       position: absolute;
       left: 0;
-      top: 6px;
-      bottom: 6px;
-      width: 3px;
-      background: var(--pink);
+      top: 8px;
+      bottom: 8px;
+      width: 2.5px;
+      background: var(--pink-text);
       border-radius: 0 2px 2px 0;
     }
 
     .nav-ico {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
+      width: 22px;
+      height: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      color: var(--text2);
+      color: var(--text3);
     }
 
     .nav-btn.active .nav-ico {
-      background: var(--pink2);
       color: var(--pink-text);
+    }
+
+    .nav-btn:hover .nav-ico {
+      color: var(--text2);
     }
 
     .nav-lbl {
@@ -510,7 +512,7 @@
       position: relative;
     }
 
-    /* PAGE TRANSITIONS */
+    /* PAGE TRANSITIONS — clean crossfade, no movement */
     .page {
       display: flex;
       flex: 1;
@@ -520,14 +522,12 @@
       inset: 0;
       opacity: 0;
       pointer-events: none;
-      transform: translateY(12px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      transition: opacity 0.18s ease;
     }
 
     .page.active {
       opacity: 1;
       pointer-events: all;
-      transform: translateY(0);
       position: relative;
     }
 
@@ -791,13 +791,13 @@
     }
 
     .streak-dot.active {
-      background: rgba(88, 86, 214, .15);
-      color: var(--indigo);
+      background: var(--pink2);
+      color: var(--pink-text);
     }
 
     .streak-dot.today {
-      background: var(--indigo);
-      color: #fff;
+      background: var(--pink);
+      color: var(--pink-text);
     }
 
     .home-section-lbl {
@@ -1517,11 +1517,11 @@
     }
 
     .ft-ico {
-      width: 16px;
+      width: 32px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
     }
 
     .ft-lbl {
@@ -1857,12 +1857,12 @@
     }
 
     .ar-fico {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     .ar-fname {
@@ -2069,23 +2069,169 @@
       border-color: var(--pink);
     }
 
-    /* PLAY MODE */
-    .play-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      align-items: start;
+    /* PLAY MODE — deck library view */
+    .play-folder-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .9px;
+      padding: 18px 2px 8px;
     }
 
-    .prog-strip {
-      height: 3px;
-      background: var(--sep);
+    .play-folder-lbl:first-child {
+      padding-top: 4px;
+    }
+
+    .play-deck-group {
+      background: var(--bg);
+      border-radius: var(--r3);
+      border: .5px solid var(--sep);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .play-deck-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: .5px solid var(--sep);
+    }
+
+    .play-deck-header:last-child {
+      border-bottom: none;
+    }
+
+    .play-deck-ico {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--pink2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
+    }
+
+    .play-deck-name {
+      font-size: 16px;
+      font-weight: 700;
+      flex: 1;
+      letter-spacing: -.2px;
+    }
+
+    .play-deck-meta {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    .play-set-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px 11px 48px;
+      border-top: .5px solid var(--sep);
+      cursor: pointer;
+      transition: background .1s;
+    }
+
+    .play-set-row:hover {
+      background: var(--bg2);
+    }
+
+    .play-set-name {
+      font-size: 14px;
+      flex: 1;
+      color: var(--text);
+    }
+
+    .play-set-count {
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--bg3);
+      color: var(--text2);
+      padding: 2px 8px;
+      border-radius: 20px;
+      min-width: 28px;
+      text-align: center;
+    }
+
+    .play-set-count.active-deck {
+      background: var(--pink2);
+      color: var(--pink-text);
+    }
+
+    .play-btn-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--pink-text);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--sf);
+      flex-shrink: 0;
+    }
+
+    /* Play session view */
+    .play-session-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 24px 0;
+      max-width: 700px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .play-session-counter {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      margin-bottom: 20px;
+      letter-spacing: .3px;
+    }
+
+    .play-session-card {
+      width: 100%;
+    }
+
+    .play-session-nav {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .play-session-nav button {
+      flex: 1;
+      height: 44px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--sf);
+      border: none;
+    }
+
+    .play-session-nav .btn-prev {
+      background: var(--bg3);
+      color: var(--text2);
+    }
+
+    .play-session-nav .btn-next {
+      background: var(--pink);
+      color: var(--pink-text);
     }
 
     .prog-fill {
       height: 100%;
-      background: var(--pink);
+      background: var(--pink-text);
       border-radius: 1px;
       transition: width .4s;
     }
@@ -2800,7 +2946,10 @@
         <div class="home-grid" id="home-stats"></div>
         <div class="home-section-lbl">recents</div>
         <div class="home-recents" id="home-recents"></div>
-        <div class="home-section-lbl" style="margin-top:18px;">quick actions</div>
+        <div class="home-section-lbl" style="margin-top:18px;" id="home-gwa-lbl" style="display:none;">quarter grades
+        </div>
+        <div id="home-gwa-compare" style="margin-bottom:18px;"></div>
+        <div class="home-section-lbl" style="margin-top:2px;">quick actions</div>
         <div class="home-actions-grid" id="home-actions"></div>
       </div>
     </div>
@@ -2864,12 +3013,6 @@
                 <div class="pct-ref-row" style="grid-column:span 2;"><span class="pct-ref-pct">Below 40</span><span
                     class="pct-ref-grade">5.00</span></div>
               </div>
-            </div>
-
-            <!-- Comparison section -->
-            <div class="gwa-compare-section" id="gwa-compare-section" style="display:none;">
-              <div class="pct-ref-title" style="margin-bottom:10px;">quarter comparison</div>
-              <div class="gwa-compare-grid" id="gwa-compare-grid"></div>
             </div>
           </div>
 
@@ -3019,47 +3162,17 @@
     <!-- PLAY MODE -->
     <div class="page" id="page-play">
       <div class="topbar">
-        <div class="topbar-title">play mode <span style="font-size:13px;color:var(--text3);font-weight:400;"
-            id="play-title-sub"></span></div>
+        <div class="topbar-title" id="play-title-sub" style="font-size:17px;font-weight:700;">play mode</div>
         <div style="flex:1;"></div>
-        <span class="pill pill-green" id="play-right-count">0 right</span>
-        <span class="pill pill-red" style="margin-left:4px;" id="play-wrong-count">0 wrong</span>
         <button onclick="goPage('recall')"
-          style="margin-left:10px;background:var(--bg3);border:none;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sf);">back</button>
+          style="background:transparent;border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sf);color:var(--text3);">done</button>
       </div>
-      <!-- Progress bar + counter -->
-      <div style="padding:0 24px;background:var(--bg);border-bottom:.5px solid var(--sep);padding-bottom:10px;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:11px;color:var(--text3);font-weight:600;" id="play-q-counter">1 / 1</span>
-          <div style="flex:1;height:4px;background:var(--sep);border-radius:2px;overflow:hidden;">
-            <div class="prog-fill" id="play-progress" style="width:0%;transition:width .35s;"></div>
-          </div>
-          <span style="font-size:11px;color:var(--text3);font-weight:600;" id="play-q-pct">0%</span>
-        </div>
+      <!-- Thin progress bar when playing -->
+      <div id="play-progress-bar" style="display:none;height:3px;background:var(--sep);flex-shrink:0;">
+        <div class="prog-fill" id="play-progress" style="width:0%;transition:width .35s;"></div>
       </div>
-      <div class="page-body"
-        style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 24px;">
-        <div id="play-card-area" style="width:100%;max-width:680px;"></div>
-        <!-- Nav buttons -->
-        <div style="display:flex;align-items:center;gap:16px;margin-top:20px;" id="play-nav">
-          <button id="play-prev-btn" onclick="playNav(-1)"
-            style="height:40px;padding:0 20px;border-radius:10px;border:.5px solid var(--sep2);background:var(--bg);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sf);color:var(--text2);display:flex;align-items:center;gap:6px;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-              stroke-linecap="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-            prev
-          </button>
-          <span id="play-nav-label" style="font-size:13px;color:var(--text3);min-width:60px;text-align:center;"></span>
-          <button id="play-next-btn" onclick="playNav(1)"
-            style="height:40px;padding:0 20px;border-radius:10px;border:none;background:var(--pink);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sf);color:var(--pink-text);display:flex;align-items:center;gap:6px;">
-            next
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-              stroke-linecap="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-        </div>
+      <div class="page-body" id="play-body">
+        <!-- Populated by buildPlayMode() -->
       </div>
     </div>
 
@@ -3577,64 +3690,6 @@
         }
       }
 
-      // Update comparison section
-      updateGWAComparison();
-    }
-
-    function updateGWAComparison() {
-      var grid = document.getElementById('gwa-compare-grid');
-      var section = document.getElementById('gwa-compare-section');
-      if (!grid || !section) return;
-
-      var hasAny = false;
-      for (var qi = 0; qi < 4; qi++) { if (calcGWA(qi) !== null) { hasAny = true; break; } }
-      section.style.display = hasAny ? 'block' : 'none';
-      if (!hasAny) return;
-
-      grid.innerHTML = '';
-      var qLabels = ['Q1', 'Q2', 'Q3', 'Q4'];
-      var values = [];
-      for (var qi2 = 0; qi2 < 4; qi2++) {
-        var v = calcGWA(qi2);
-        values.push(v);
-        var c = document.createElement('div');
-        c.className = 'gwa-compare-card';
-        c.innerHTML = '<div class="gwa-compare-lbl">' + qLabels[qi2] + ' GWA</div>' +
-          '<div class="gwa-compare-val ' + (v !== null ? gradeClass(v) : '') + '">' + (v !== null ? v.toFixed(2) : '—') + '</div>';
-        grid.appendChild(c);
-      }
-
-      // Find highest/lowest subject across current quarter
-      var subjs = quarters[currentQuarter];
-      var bestSubj = null, bestG = Infinity, worstSubj = null, worstG2 = -Infinity;
-      for (var i = 0; i < subjs.length; i++) {
-        var sg2 = calcQuarterGrade(subjs[i], currentQuarter);
-        if (sg2 !== null) {
-          if (sg2 < bestG) { bestG = sg2; bestSubj = subjs[i]; }
-          if (sg2 > worstG2) { worstG2 = sg2; worstSubj = subjs[i]; }
-        }
-      }
-
-      // Quarter trends
-      var trends = [];
-      for (var qi3 = 1; qi3 < 4; qi3++) {
-        var prev = values[qi3 - 1], curr2 = values[qi3];
-        if (prev !== null && curr2 !== null) {
-          var diff = prev - curr2; // lower = better
-          if (Math.abs(diff) >= 0.01) trends.push(qLabels[qi3] + ': ' + (diff > 0 ? '↑ improved' : '↓ dropped') + ' by ' + Math.abs(diff).toFixed(2));
-        }
-      }
-
-      if (bestSubj || worstSubj || trends.length > 0) {
-        var extra = document.createElement('div');
-        extra.style.cssText = 'grid-column:span 2;background:var(--bg);border:.5px solid var(--sep);border-radius:var(--r2);padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.8;';
-        var lines = [];
-        if (bestSubj) lines.push('🏆 Best this quarter: <strong>' + escHtml(bestSubj.n) + '</strong> — ' + bestG.toFixed(2));
-        if (worstSubj && worstSubj !== bestSubj) lines.push('📌 Needs attention: <strong>' + escHtml(worstSubj.n) + '</strong> — ' + worstG2.toFixed(2));
-        lines = lines.concat(trends);
-        extra.innerHTML = lines.join('<br>');
-        grid.appendChild(extra);
-      }
     }
 
     function switchGWAQuarter(qIdx) {
@@ -3775,18 +3830,33 @@
       rc.addEventListener('click', function () { goPage('recall'); });
       stats.appendChild(rc);
 
-      // Streak card
-      var today = new Date().getDay(); // 0=Sun
+      // Streak card — streak based on daily visits
+      var today2 = new Date().getDay(); // 0=Sun
       var days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
       var sc = document.createElement('div');
       sc.className = 'stat-card';
+      // Compute streak from localStorage
+      var todayStr = new Date().toDateString();
+      var lastVisit = localStorage.getItem('katsu_last_visit');
       var streakVal = parseInt(localStorage.getItem('study_streak') || '0');
+      if (lastVisit !== todayStr) {
+        var yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+        if (lastVisit === yesterday.toDateString()) {
+          streakVal += 1; // consecutive day
+        } else if (!lastVisit) {
+          streakVal = 1; // first ever visit
+        } else {
+          streakVal = 1; // broke streak, restart
+        }
+        localStorage.setItem('study_streak', streakVal);
+        localStorage.setItem('katsu_last_visit', todayStr);
+      }
       var dotHtml = '';
       for (var di = 0; di < 7; di++) {
         var dayIdx = (di + 1) % 7;
-        var isToday = dayIdx === today;
-        var active = di < (streakVal % 7);
-        dotHtml += '<div class="streak-dot ' + (isToday ? 'today' : active ? 'active' : '') + '">' + days[di] + '</div>';
+        var isToday2 = dayIdx === today2;
+        var active2 = di < (streakVal % 7);
+        dotHtml += '<div class="streak-dot ' + (isToday2 ? 'today' : active2 ? 'active' : '') + '">' + days[di] + '</div>';
       }
       sc.innerHTML =
         '<div class="stat-lbl">Study Streak</div>' +
@@ -3844,13 +3914,60 @@
         });
       }
 
+      // GWA Quarter comparison on home
+      var homeGwaCompare = document.getElementById('home-gwa-compare');
+      var homeGwaLbl = document.getElementById('home-gwa-lbl');
+      if (homeGwaCompare) {
+        homeGwaCompare.innerHTML = '';
+        var qLabels = ['Q1', 'Q2', 'Q3', 'Q4'];
+        var anyQ = false;
+        var qGrid = document.createElement('div');
+        qGrid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:10px;';
+        for (var qi = 0; qi < 4; qi++) {
+          var qv = calcGWA(qi);
+          if (qv !== null) anyQ = true;
+          var qc = document.createElement('div');
+          qc.style.cssText = 'background:var(--bg);border-radius:12px;padding:14px 16px;border:.5px solid var(--sep);cursor:pointer;';
+          qc.innerHTML = '<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;">' + qLabels[qi] + ' GWA</div>' +
+            '<div style="font-size:22px;font-weight:800;letter-spacing:-1px;' + (qv !== null ? 'color:var(--pink-text);' : 'color:var(--text3);') + '">' + (qv !== null ? qv.toFixed(2) : '—') + '</div>';
+          qc.addEventListener('click', function (capturedQ) { return function () { goPage('gwa'); switchGWAQuarter(capturedQ); }; }(qi));
+          qGrid.appendChild(qc);
+        }
+        if (anyQ) {
+          if (homeGwaLbl) homeGwaLbl.style.display = 'block';
+          homeGwaCompare.appendChild(qGrid);
+
+          // Best/worst subject this quarter
+          var subjs = quarters[currentQuarter];
+          var bestSubj = null, bestG = Infinity, worstSubj = null, worstG = -Infinity;
+          for (var si = 0; si < subjs.length; si++) {
+            var sg = calcQuarterGrade(subjs[si], currentQuarter);
+            if (sg !== null) {
+              if (sg < bestG) { bestG = sg; bestSubj = subjs[si]; }
+              if (sg > worstG) { worstG = sg; worstSubj = subjs[si]; }
+            }
+          }
+          if (bestSubj || (worstSubj && worstSubj !== bestSubj)) {
+            var insightEl = document.createElement('div');
+            insightEl.style.cssText = 'margin-top:10px;background:var(--bg);border:.5px solid var(--sep);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.75;display:flex;gap:20px;flex-wrap:wrap;';
+            var parts = [];
+            if (bestSubj) parts.push('<span><span style="color:var(--text3);font-weight:600;">best this quarter</span><br><strong>' + escHtml(bestSubj.n) + '</strong> — ' + bestG.toFixed(2) + '</span>');
+            if (worstSubj && worstSubj !== bestSubj) parts.push('<span><span style="color:var(--text3);font-weight:600;">needs attention</span><br><strong>' + escHtml(worstSubj.n) + '</strong> — ' + worstG.toFixed(2) + '</span>');
+            insightEl.innerHTML = parts.join('<span style="width:.5px;background:var(--sep);align-self:stretch;"></span>');
+            homeGwaCompare.appendChild(insightEl);
+          }
+        } else {
+          if (homeGwaLbl) homeGwaLbl.style.display = 'none';
+        }
+      }
+
       // Quick actions
       var act = document.getElementById('home-actions');
       act.innerHTML = '';
       var actData = [
         { icon: '<polygon points="5 3 19 12 5 21 5 3"/>', lbl: 'Start Play Mode', color: 'var(--pink-text)', bg: 'var(--pink2)', page: 'play' },
         { icon: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', lbl: 'New Note', color: '#248A3D', bg: 'rgba(52,199,89,.1)', page: 'workspace', action: 'newfile' },
-        { icon: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>', lbl: 'New Recall Set', color: 'var(--indigo)', bg: 'rgba(88,86,214,.08)', page: 'recall' },
+        { icon: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>', lbl: 'New Recall Set', color: 'var(--pink-text)', bg: 'var(--pink2)', page: 'recall' },
         { icon: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>', lbl: 'Update Grades', color: 'var(--orange)', bg: 'rgba(255,149,0,.08)', page: 'gwa' },
       ];
       actData.forEach(function (a) {
@@ -4122,7 +4239,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       FILE TREE with HTML5 Drag & Drop
+       FILE TREE with subfolders + HTML5 Drag & Drop
     ══════════════════════════════════════════════════════════════ */
     function buildFileTree() {
       var root = document.getElementById('ws-filetree-root');
@@ -4130,87 +4247,127 @@
       var folders = fileTree.folders || [];
       var files = fileTree.files || [];
 
-      for (var fi = 0; fi < folders.length; fi++) {
-        (function (folder) {
-          var fRow = document.createElement('div');
-          fRow.className = 'ft-row';
-          fRow.style.paddingLeft = '14px';
+      // Recursive renderer
+      function renderFolder(folder, depth) {
+        var indent = 14 + depth * 14;
+        var fRow = document.createElement('div');
+        fRow.className = 'ft-row';
+        fRow.style.paddingLeft = indent + 'px';
 
-          /* Drag-over folder highlight */
-          fRow.addEventListener('dragover', function (e) {
-            e.preventDefault();
-            fRow.classList.add('drag-over');
-            fRow.style.background = 'rgba(245,188,226,.22)';
-          });
-          fRow.addEventListener('dragleave', function () {
-            fRow.classList.remove('drag-over');
-            fRow.style.background = '';
-          });
-          fRow.addEventListener('drop', function (e) {
-            e.preventDefault();
-            fRow.classList.remove('drag-over');
-            fRow.style.background = '';
-            var fileId = e.dataTransfer.getData('text/plain');
-            var target = (fileTree.files || []).find(function (f) { return f.id === fileId; });
+        fRow.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          fRow.classList.add('drag-over');
+        });
+        fRow.addEventListener('dragleave', function () {
+          fRow.classList.remove('drag-over');
+        });
+        fRow.addEventListener('drop', function (e) {
+          e.preventDefault();
+          fRow.classList.remove('drag-over');
+          var data = e.dataTransfer.getData('text/plain');
+          if (data.startsWith('file:')) {
+            var fileId = data.slice(5);
+            var target = files.find(function (f) { return f.id === fileId; });
             if (target) { target.folderId = folder.id; saveWorkspace(); buildFileTree(); }
-          });
-
-          var ico = document.createElement('span');
-          ico.className = 'ft-ico';
-          ico.innerHTML = folder.expanded
-            ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>'
-            : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
-
-          var lbl = document.createElement('span');
-          lbl.className = 'ft-lbl';
-          lbl.textContent = folder.name;
-
-          var acts = document.createElement('span');
-          acts.className = 'ft-actions';
-
-          var addIn = document.createElement('button');
-          addIn.className = 'ft-act-btn';
-          addIn.title = 'New note in folder';
-          addIn.innerHTML = '+';
-          addIn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            openNewFileModal(folder.id);
-          });
-
-          var delF = document.createElement('button');
-          delF.className = 'ft-act-btn';
-          delF.title = 'Delete folder';
-          delF.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-          delF.addEventListener('click', function (e) {
-            e.stopPropagation();
-            fileTree.folders = fileTree.folders.filter(function (f) { return f.id !== folder.id; });
-            fileTree.files = fileTree.files.filter(function (f) { return f.folderId !== folder.id; });
-            if (currentFileId) {
-              var still = (fileTree.files || []).find(function (f) { return f.id === currentFileId; });
-              if (!still) { currentFileId = null; wsShowEmpty(); }
+          } else if (data.startsWith('folder:')) {
+            var foldId = data.slice(7);
+            if (foldId !== folder.id) {
+              var tf = folders.find(function (f) { return f.id === foldId; });
+              if (tf && tf.id !== folder.id) { tf.parentId = folder.id; saveWorkspace(); buildFileTree(); }
             }
+          }
+        });
+
+        var ico = document.createElement('span');
+        ico.className = 'ft-ico';
+        var chevron = folder.expanded
+          ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>'
+          : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg>';
+        var folderSvg = '<svg width="17" height="14" viewBox="140 130 740 680" xmlns="http://www.w3.org/2000/svg"><path d="M864.51,787.3H210.18c-36.45,0-66-29.55-66-66V192.12c0-34.15,27.69-61.84,61.84-61.84h164.94c7.37,0,14.57,2.24,20.63,6.43l52.03,38.35c15.42,11.37,34.08,17.5,53.24,17.5h371.38c30.52,0,55.26,24.74,55.26,55.26v480.47c0,32.58-26.42,59-59,59Z" fill="#f5c842"/><path d="M200.95,241.68h660.72c34.13,0,61.84,27.71,61.84,61.84v424.77c0,32.56-26.44,59-59,59H210.18c-36.43,0-66-29.57-66-66v-422.84c0-31.33,25.44-56.77,56.77-56.77Z" fill="#e6a800" opacity="0.9"/></svg>';
+        ico.innerHTML = '<span style="display:inline-flex;align-items:center;gap:3px;">' + chevron + folderSvg + '</span>';
+
+        // Make folder draggable
+        fRow.draggable = true;
+        fRow.addEventListener('dragstart', function (e) {
+          e.dataTransfer.setData('text/plain', 'folder:' + folder.id);
+          e.dataTransfer.effectAllowed = 'move';
+          fRow.style.opacity = '.4';
+        });
+        fRow.addEventListener('dragend', function () { fRow.style.opacity = ''; });
+
+        var lbl = document.createElement('span');
+        lbl.className = 'ft-lbl';
+        lbl.textContent = folder.name;
+
+        var acts = document.createElement('span');
+        acts.className = 'ft-actions';
+
+        var addFile = document.createElement('button');
+        addFile.className = 'ft-act-btn';
+        addFile.title = 'New note';
+        addFile.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+        addFile.addEventListener('click', function (e) { e.stopPropagation(); openNewFileModal(folder.id); });
+
+        var addSub = document.createElement('button');
+        addSub.className = 'ft-act-btn';
+        addSub.title = 'New subfolder';
+        addSub.innerHTML = '<svg width="9" height="9" viewBox="140 130 740 680" xmlns="http://www.w3.org/2000/svg"><path d="M864.51,787.3H210.18c-36.45,0-66-29.55-66-66V192.12c0-34.15,27.69-61.84,61.84-61.84h164.94c7.37,0,14.57,2.24,20.63,6.43l52.03,38.35c15.42,11.37,34.08,17.5,53.24,17.5h371.38c30.52,0,55.26,24.74,55.26,55.26v480.47c0,32.58-26.42,59-59,59Z" fill="#f5c842"/><path d="M200.95,241.68h660.72c34.13,0,61.84,27.71,61.84,61.84v424.77c0,32.56-26.44,59-59,59H210.18c-36.43,0-66-29.57-66-66v-422.84c0-31.33,25.44-56.77,56.77-56.77Z" fill="#e6a800" opacity="0.9"/></svg>';
+        addSub.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openModal('new subfolder', 'Subfolder name…', function (name) {
+            var id = 'folder-' + Date.now();
+            if (!fileTree.folders) fileTree.folders = [];
+            fileTree.folders.push({ id: id, name: name, expanded: true, parentId: folder.id });
             saveWorkspace(); buildFileTree();
           });
+        });
 
-          acts.appendChild(addIn);
-          acts.appendChild(delF);
-          fRow.appendChild(ico);
-          fRow.appendChild(lbl);
-          fRow.appendChild(acts);
-          fRow.addEventListener('click', function () { folder.expanded = !folder.expanded; buildFileTree(); });
-          root.appendChild(fRow);
+        var delF = document.createElement('button');
+        delF.className = 'ft-act-btn';
+        delF.title = 'Delete folder';
+        delF.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+        delF.addEventListener('click', function (e) {
+          e.stopPropagation();
+          // Remove folder + its children
+          var toRemove = collectFolderIds(folder.id);
+          fileTree.folders = folders.filter(function (f) { return !toRemove.includes(f.id); });
+          fileTree.files = files.filter(function (f) { return !toRemove.includes(f.folderId); });
+          if (currentFileId && !(fileTree.files || []).find(function (f) { return f.id === currentFileId; })) { currentFileId = null; wsShowEmpty(); }
+          saveWorkspace(); buildFileTree();
+        });
 
-          if (folder.expanded) {
-            var ff = files.filter(function (f) { return f.folderId === folder.id; });
-            for (var k = 0; k < ff.length; k++) root.appendChild(buildFileRow(ff[k], 28));
-          }
-        })(folders[fi]);
+        acts.appendChild(addFile); acts.appendChild(addSub); acts.appendChild(delF);
+        fRow.appendChild(ico); fRow.appendChild(lbl); fRow.appendChild(acts);
+        fRow.addEventListener('click', function () { folder.expanded = !folder.expanded; saveWorkspace(); buildFileTree(); });
+        root.appendChild(fRow);
+
+        if (folder.expanded) {
+          // Subfolders
+          var subFolders = folders.filter(function (f) { return f.parentId === folder.id; });
+          subFolders.forEach(function (sf) { renderFolder(sf, depth + 1); });
+          // Files in this folder
+          var ff = files.filter(function (f) { return f.folderId === folder.id; });
+          ff.forEach(function (file) { root.appendChild(buildFileRow(file, indent + 14)); });
+        }
       }
 
-      var rootFiles = files.filter(function (f) { return !f.folderId; });
-      for (var k2 = 0; k2 < rootFiles.length; k2++) root.appendChild(buildFileRow(rootFiles[k2], 14));
+      function collectFolderIds(folderId) {
+        var ids = [folderId];
+        folders.forEach(function (f) {
+          if (f.parentId === folderId) ids = ids.concat(collectFolderIds(f.id));
+        });
+        return ids;
+      }
 
-      if (folders.length === 0 && rootFiles.length === 0) {
+      // Render root folders (no parentId)
+      var rootFolders = folders.filter(function (f) { return !f.parentId; });
+      rootFolders.forEach(function (folder) { renderFolder(folder, 0); });
+
+      // Root files
+      var rootFiles = files.filter(function (f) { return !f.folderId; });
+      rootFiles.forEach(function (file) { root.appendChild(buildFileRow(file, 14)); });
+
+      if (rootFolders.length === 0 && rootFiles.length === 0) {
         var es = document.createElement('div');
         es.className = 'empty-state';
         es.style.padding = '28px 12px';
@@ -4237,7 +4394,7 @@
 
       var ico = document.createElement('span');
       ico.className = 'ft-ico';
-      ico.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+      ico.innerHTML = '<svg width="12" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
 
       var lbl = document.createElement('span');
       lbl.className = 'ft-lbl';
@@ -4391,8 +4548,8 @@
         var fhdr = document.createElement('div');
         fhdr.className = 'deck-folder-hdr';
         var fIco = document.createElement('span');
-        fIco.style.cssText = 'font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;';
-        fIco.innerHTML = '<svg width="18" height="15" viewBox="140 130 740 680" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M864.51,787.3H210.18c-36.45,0-66-29.55-66-66V192.12c0-34.15,27.69-61.84,61.84-61.84h164.94c7.37,0,14.57,2.24,20.63,6.43l52.03,38.35c15.42,11.37,34.08,17.5,53.24,17.5h371.38c30.52,0,55.26,24.74,55.26,55.26v480.47c0,32.58-26.42,59-59,59Z" fill="var(--pink)"/><path d="M200.95,241.68h660.72c34.13,0,61.84,27.71,61.84,61.84v424.77c0,32.56-26.44,59-59,59H210.18c-36.43,0-66-29.57-66-66v-422.84c0-31.33,25.44-56.77,56.77-56.77Z" fill="var(--pink-text)" opacity="0.85"/></svg>';
+        fIco.style.cssText = 'flex-shrink:0;display:flex;align-items:center;justify-content:center;';
+        fIco.innerHTML = '<svg width="22" height="18" viewBox="140 130 740 680" xmlns="http://www.w3.org/2000/svg"><path d="M864.51,787.3H210.18c-36.45,0-66-29.55-66-66V192.12c0-34.15,27.69-61.84,61.84-61.84h164.94c7.37,0,14.57,2.24,20.63,6.43l52.03,38.35c15.42,11.37,34.08,17.5,53.24,17.5h371.38c30.52,0,55.26,24.74,55.26,55.26v480.47c0,32.58-26.42,59-59,59Z" fill="#f5c842"/><path d="M200.95,241.68h660.72c34.13,0,61.84,27.71,61.84,61.84v424.77c0,32.56-26.44,59-59,59H210.18c-36.43,0-66-29.57-66-66v-422.84c0-31.33,25.44-56.77,56.77-56.77Z" fill="#e6a800" opacity="0.9"/></svg>';
         var fName = document.createElement('span');
         fName.className = 'deck-folder-name'; fName.textContent = folder.name;
         var fDecks = studyDecks.filter(function (d) { return d.folderId === folder.id; });
@@ -4840,127 +4997,210 @@
       return a;
     }
 
-    var playQueue = [];       // shuffled items
-    var playIdx = 0;          // current question index
-    var playAnswered = [];    // answered state per item: null | 'right' | 'wrong'
+    var playQueue = [];
+    var playIdx = 0;
+    var playAnswered = [];
+    var playSessionDeckId = null;
 
     function buildPlayMode() {
-      var cardArea = document.getElementById('play-card-area');
-      if (!cardArea) return;
-      cardArea.innerHTML = '';
-      playRight = 0; playWrong = 0;
-      playIdx = 0;
+      // Always show deck library first
+      playSessionDeckId = null;
+      var titleEl = document.getElementById('play-title-sub');
+      if (titleEl) titleEl.textContent = 'play mode';
+      var progBar = document.getElementById('play-progress-bar');
+      if (progBar) progBar.style.display = 'none';
 
-      var deck = studyDecks.find(function (d) { return d.id === currentDeckId; });
-      var sub = document.getElementById('play-title-sub');
-      if (sub) sub.textContent = deck ? '· ' + deck.name : '';
+      var body = document.getElementById('play-body');
+      if (!body) return;
+      body.innerHTML = '';
+      body.style.padding = '20px 24px';
 
-      if (!deck || !deck.items || deck.items.length === 0) {
-        cardArea.innerHTML =
+      if (studyDecks.length === 0) {
+        body.innerHTML =
           '<div class="empty-state">' +
           '<div class="empty-ico"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>' +
-          '<div class="empty-title">no exercises in this deck</div>' +
-          '<div class="empty-sub">go to active recall and add exercises to this deck.</div>' +
+          '<div class="empty-title">no decks yet</div>' +
+          '<div class="empty-sub">go to active recall and create a study deck first.</div>' +
           '</div>';
-        var nav = document.getElementById('play-nav');
-        if (nav) nav.style.display = 'none';
         return;
       }
 
+      // Group decks by folder
+      var grouped = {}; // folderId -> {label, decks[]}
+      var rootDecks = [];
+
+      studyDecks.forEach(function (deck) {
+        if (deck.folderId) {
+          var folder = (deckFolders || []).find(function (f) { return f.id === deck.folderId; });
+          var key = deck.folderId;
+          if (!grouped[key]) grouped[key] = { label: folder ? folder.name : 'folder', decks: [] };
+          grouped[key].decks.push(deck);
+        } else {
+          rootDecks.push(deck);
+        }
+      });
+
+      function renderDeckGroup(decks, labelText) {
+        if (!decks.length) return;
+        if (labelText) {
+          var lbl = document.createElement('div');
+          lbl.className = 'play-folder-lbl';
+          lbl.textContent = labelText.toUpperCase();
+          body.appendChild(lbl);
+        }
+        var group = document.createElement('div');
+        group.className = 'play-deck-group';
+        decks.forEach(function (deck) {
+          var count = deck.items ? deck.items.length : 0;
+          var isCurrent = deck.id === currentDeckId;
+
+          var row = document.createElement('div');
+          row.className = 'play-set-row';
+          if (isCurrent) row.style.background = 'rgba(245,188,226,.08)';
+
+          var name = document.createElement('span');
+          name.className = 'play-set-name';
+          name.textContent = deck.name;
+
+          var badge = document.createElement('span');
+          badge.className = 'play-set-count' + (isCurrent ? ' active-deck' : '');
+          badge.textContent = count;
+
+          row.appendChild(name);
+          row.appendChild(badge);
+
+          if (count > 0) {
+            var playBtn = document.createElement('button');
+            playBtn.className = 'play-btn-inline';
+            playBtn.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg> play';
+            playBtn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              currentDeckId = deck.id;
+              startPlaySession(deck);
+            });
+            row.appendChild(playBtn);
+          }
+
+          row.addEventListener('click', function () {
+            currentDeckId = deck.id;
+            if (count > 0) startPlaySession(deck);
+          });
+
+          group.appendChild(row);
+        });
+        body.appendChild(group);
+      }
+
+      // Root decks first (no label)
+      if (rootDecks.length) renderDeckGroup(rootDecks, null);
+
+      // Grouped by folder
+      Object.keys(grouped).forEach(function (key) {
+        renderDeckGroup(grouped[key].decks, grouped[key].label);
+      });
+    }
+
+    function startPlaySession(deck) {
+      playRight = 0; playWrong = 0;
+      playIdx = 0;
       playQueue = fisherYatesShuffle(deck.items);
       playAnswered = playQueue.map(function () { return null; });
 
-      var nav = document.getElementById('play-nav');
-      if (nav) nav.style.display = 'flex';
+      var titleEl = document.getElementById('play-title-sub');
+      if (titleEl) titleEl.textContent = deck.name;
+      var progBar = document.getElementById('play-progress-bar');
+      if (progBar) progBar.style.display = 'block';
+      var prog = document.getElementById('play-progress');
+      if (prog) prog.style.width = '0%';
 
       playShowCard(0);
     }
 
     function playShowCard(idx) {
       playIdx = idx;
-      var cardArea = document.getElementById('play-card-area');
-      if (!cardArea) return;
+      var body = document.getElementById('play-body');
+      if (!body) return;
 
-      // Animate out
-      cardArea.style.opacity = '0';
-      cardArea.style.transform = 'translateY(10px)';
-      setTimeout(function () {
-        cardArea.innerHTML = '';
-        if (idx >= playQueue.length) {
-          // Summary screen
-          var pct = playQueue.length === 0 ? 0 : Math.round((playRight / playQueue.length) * 100);
-          cardArea.innerHTML =
-            '<div style="background:var(--bg);border-radius:var(--r3);border:.5px solid var(--sep);padding:36px;text-align:center;">' +
-            '<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;">session complete</div>' +
-            '<div style="font-size:64px;font-weight:800;letter-spacing:-3px;color:var(--pink-text);line-height:1;">' + pct + '%</div>' +
-            '<div style="font-size:14px;color:var(--text3);margin-top:6px;">' + playRight + ' correct · ' + playWrong + ' missed</div>' +
-            '<button onclick="buildPlayMode()" style="margin-top:28px;height:44px;padding:0 28px;border-radius:12px;border:none;background:var(--pink);color:var(--pink-text);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sf);">play again</button>' +
-            '</div>';
-          var nav = document.getElementById('play-nav');
-          if (nav) nav.style.display = 'none';
-          cardArea.style.opacity = '1';
-          cardArea.style.transform = 'translateY(0)';
-          return;
-        }
+      // Check if finished
+      if (idx >= playQueue.length) {
+        var pct = playQueue.length === 0 ? 0 : Math.round((playRight / playQueue.length) * 100);
+        body.innerHTML = '';
+        body.style.cssText = 'display:flex;align-items:center;justify-content:center;';
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'text-align:center;max-width:400px;padding:24px;';
+        wrap.innerHTML =
+          '<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:20px;">session complete</div>' +
+          '<div style="font-size:80px;font-weight:800;letter-spacing:-4px;color:var(--pink-text);line-height:1;">' + pct + '%</div>' +
+          '<div style="font-size:14px;color:var(--text3);margin-top:8px;margin-bottom:32px;">' + playRight + ' correct · ' + playWrong + ' missed</div>' +
+          '<div style="display:flex;gap:10px;justify-content:center;">' +
+          '<button onclick="buildPlayMode()" style="height:44px;padding:0 24px;border-radius:12px;border:.5px solid var(--sep2);background:var(--bg);color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sf);">all decks</button>' +
+          '<button onclick="startPlaySession(studyDecks.find(function(d){return d.id===currentDeckId;}))" style="height:44px;padding:0 24px;border-radius:12px;border:none;background:var(--pink);color:var(--pink-text);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sf);">play again</button>' +
+          '</div>';
+        body.appendChild(wrap);
+        var progBar = document.getElementById('play-progress-bar');
+        if (progBar) progBar.style.display = 'none';
+        return;
+      }
 
-        var item = playQueue[idx];
-        var node = buildPlayCard(item, idx);
-        cardArea.appendChild(node);
+      // Update progress
+      var doneCount = playAnswered.filter(function (a) { return a !== null; }).length;
+      var pct2 = playQueue.length === 0 ? 0 : Math.round((doneCount / playQueue.length) * 100);
+      var prog = document.getElementById('play-progress');
+      if (prog) prog.style.width = pct2 + '%';
 
-        // Update counter + progress bar
-        var counter = document.getElementById('play-q-counter');
-        if (counter) counter.textContent = (idx + 1) + ' / ' + playQueue.length;
-        var pctEl = document.getElementById('play-q-pct');
-        var doneCount = playAnswered.filter(function (a) { return a !== null; }).length;
-        var prog = document.getElementById('play-progress');
-        var pct2 = playQueue.length === 0 ? 0 : Math.round((doneCount / playQueue.length) * 100);
-        if (prog) prog.style.width = pct2 + '%';
-        if (pctEl) pctEl.textContent = pct2 + '%';
+      body.innerHTML = '';
+      body.style.cssText = 'overflow-y:auto;background:var(--bg2);padding:0;';
 
-        // Prev/next button state
-        var prevBtn = document.getElementById('play-prev-btn');
-        var nextBtn = document.getElementById('play-next-btn');
-        var navLbl = document.getElementById('play-nav-label');
-        if (prevBtn) prevBtn.style.opacity = idx === 0 ? '.35' : '1';
-        if (nextBtn) nextBtn.textContent = ''; // rebuilt below
-        if (nextBtn) {
-          nextBtn.innerHTML = (idx === playQueue.length - 1 ? 'finish' : 'next') +
-            ' <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
-        }
-        if (navLbl) navLbl.textContent = (idx + 1) + ' of ' + playQueue.length;
+      var wrap = document.createElement('div');
+      wrap.className = 'play-session-wrap';
 
-        // Animate in
-        cardArea.style.transition = 'none';
-        setTimeout(function () {
-          cardArea.style.transition = 'opacity .22s ease, transform .22s ease';
-          cardArea.style.opacity = '1';
-          cardArea.style.transform = 'translateY(0)';
-        }, 10);
-      }, 130);
+      var counter = document.createElement('div');
+      counter.className = 'play-session-counter';
+      counter.textContent = (idx + 1) + ' of ' + playQueue.length;
+      wrap.appendChild(counter);
+
+      var cardDiv = document.createElement('div');
+      cardDiv.className = 'play-session-card';
+      var item = playQueue[idx];
+      var cardNode = buildPlayCard(item, idx);
+      cardDiv.appendChild(cardNode);
+      wrap.appendChild(cardDiv);
+
+      // Nav row
+      var nav = document.createElement('div');
+      nav.className = 'play-session-nav';
+      var prevBtn = document.createElement('button');
+      prevBtn.className = 'btn-prev';
+      prevBtn.textContent = 'prev';
+      prevBtn.style.opacity = idx === 0 ? '.35' : '1';
+      prevBtn.addEventListener('click', function () { if (idx > 0) playShowCard(idx - 1); });
+      var nextBtn = document.createElement('button');
+      nextBtn.className = 'btn-next';
+      nextBtn.textContent = idx === playQueue.length - 1 ? 'finish' : 'next';
+      nextBtn.addEventListener('click', function () { playNav(1); });
+      nav.appendChild(prevBtn);
+      nav.appendChild(nextBtn);
+      wrap.appendChild(nav);
+
+      body.appendChild(wrap);
     }
 
     function playNav(dir) {
       var newIdx = playIdx + dir;
       if (newIdx < 0) return;
-      if (newIdx > playQueue.length) return;
       playShowCard(newIdx);
     }
 
     function playMarkAnswer(idx, result) {
-      // result: 'right' | 'wrong'
-      if (playAnswered[idx] !== null) return; // already answered
+      if (playAnswered[idx] !== null) return;
       playAnswered[idx] = result;
       if (result === 'right') playRight++;
       else playWrong++;
       updatePlayCounters();
-
-      // Update progress
       var doneCount = playAnswered.filter(function (a) { return a !== null; }).length;
       var pct = playQueue.length === 0 ? 0 : Math.round((doneCount / playQueue.length) * 100);
       var prog = document.getElementById('play-progress');
       if (prog) prog.style.width = pct + '%';
-      var pctEl = document.getElementById('play-q-pct');
-      if (pctEl) pctEl.textContent = pct + '%';
     }
 
     function buildPlayCard(item) {
